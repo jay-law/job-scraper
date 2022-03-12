@@ -1,7 +1,6 @@
 # Configure Environment
 
 ```bash
-
 # Confirm Python 3 is installed
 $ python3 --version
 
@@ -12,13 +11,6 @@ $ sudo apt install python3.8-venv
 
 # Install pip
 $ sudo apt install python3-pip
-
-
-# Create venv
-$ python3 -m venv venv
-
-# Activate venv
-$ source venv/bin/activate
 ```
 
 # Contributing
@@ -27,6 +19,13 @@ $ source venv/bin/activate
 
 # Clone repo
 $ git clone git@github.com:jay-law/job-scraper.git
+$ cd job-scraper/
+
+# Create venv
+$ python3 -m venv venv
+
+# Activate venv
+$ source venv/bin/activate
 
 # Install requirements
 $ pip install -r requirements.txt
@@ -34,6 +33,9 @@ $ pip install -r requirements.txt
 ########################
 # make changes to code
 ########################
+
+# Add modules as needed
+$ python3 -m pip uninstall pylint
 
 # Update requirements
 $ python3 -m pip freeze > requirements.txt
