@@ -10,7 +10,7 @@ Python 3.8.10
 # Install venv.  I thought this shipped with python?
 $ sudo apt install python3.8-venv
 
-# Install pip.  All other components will be installed with pip
+# Install pip
 $ sudo apt install python3-pip
 
 
@@ -19,16 +19,28 @@ $ python3 -m venv venv
 
 # Activate venv
 $ source venv/bin/activate
-
-# Install beautifulsoup4, selenium, and pandas
-$ python3 -m pip install beautifulsoup4 selenium pandas
 ```
 
 # Contributing
 
 ```bash
 
-# update requirements
+# Clone repo
+$ git clone git@github.com:jay-law/job-scraper.git
+
+# Install requirements
+$ pip install -r requirements.txt
+
+########################
+# make changes to code
+########################
+
+# Update requirements
 $ python3 -m pip freeze > requirements.txt
+
+# Add, commit, and push in git
+$ git add *
+$ git commit -m 'git commit message'
+$ git push
 
 ```
