@@ -35,7 +35,7 @@ $ pip install -r requirements.txt
 ########################
 
 # Add modules as needed
-$ python3 -m pip uninstall pylint
+$ python3 -m pip uninstall SOME_NEW_MODULE
 
 # Update requirements
 $ python3 -m pip freeze > requirements.txt
@@ -44,5 +44,15 @@ $ python3 -m pip freeze > requirements.txt
 $ git add *
 $ git commit -m 'git commit message'
 $ git push
-
 ```
+
+# Execution
+
+```bash
+# Scrape linkedin
+$ python3 main.py linkedin scrape
+
+# Parse linkedin
+$ python3 main.py linkedin parse
+```
+
