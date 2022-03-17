@@ -6,6 +6,10 @@ import os
 import re
 #from selenium import JavascriptExecutor
 
+#def file_name_incrementer(string: filename):
+#    print('Checking ' + filename)
+#    return
+
 def scrape_linkedin_postings(end_posting_count: int):
 
     output_dir = "data/html"
@@ -87,12 +91,20 @@ def scrape_linkedin_postings(end_posting_count: int):
             
             output_file_name = output_file_prefix + jobid + '.html'
             print('Exporting to ' + output_file_name)
+
+            i += 1
+
+            #file_name_incrementer(output_file_name)
+            if os.path.exists(output_file_name):
+                print('Skipping as file already exists')
+                continue
             output_file = open(output_file_name, 'x')
             output_file.write(posting_details.prettify())
             output_file.close()
 
             time.sleep(2)
-            i += 1
+
+            #return
             
         #print('Scrolling up')
         #driver.execute_script("arguments[0].scrollTo(0, 0)", all_cards_div)
