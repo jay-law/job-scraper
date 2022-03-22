@@ -1,6 +1,8 @@
 import argparse
 from scrapers.linkedin_scraper import *
 from parsers.linkedin_parser import *
+import logging
+import os
 
 def init_parser():
     parser = argparse.ArgumentParser()
@@ -16,25 +18,37 @@ def init_parser():
     return parser.parse_args()
 
 def main():
-    args = init_parser()
-    print('Starting application with the following arg(s):')
+    
+    log_file_name = 'logs/output.log'    
+    logging.basicConfig(
+        filename=log_file_name, 
+        level=logging.DEBUG,     # level=logging.INFO should be default
+        format='[%(asctime)s] [%(levelname)s] - %(message)s',
+        filemode='w+')
 
+    logging.info('Initializing argparse:')
+    args = init_parser()
     args_dict = vars(args)
-    print(args_dict)
+
+    logging.info('Starting application with the following arg(s):')
+    logging.info(args_dict)
+    
     site = args_dict["site"]
     action = args_dict["action"]
 
-
     if site == 'linkedin':
         if action == 'scrape':
-            # end_posting_count should be in incriments of 25... but it isn't required
-            scrape_linkedin_postings(end_posting_count=100)
+            logging.info('Scraping linkedin')
+            # end_posting_count has a default of 25 as 25 postings are loaded
+            # per page 
+            scrape_linkedin_postings(end_posting_count=300)
         if action == 'parse':
-            parse_linkedin_postings()
+            logging.info('Parsing linkedin')
+            posting_keywords = ['rotation', 'on-call', '24/7', 'client', 'clients']
+            parse_linkedin_postings(posting_keywords)
 
-    print("Done")
+    logging.info("Finished execution.  Exiting application.")
     exit()
-
 
 if __name__ == "__main__":
   main()
