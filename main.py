@@ -41,6 +41,7 @@ def main():
             logging.info('Scraping linkedin')
             # postings_to_scrape will round up by 25 as 25
             # postings are loaded per page 
+            # todo - remove this line  
             scrape_linkedin_postings(postings_to_scrape=5)
         if action == 'parse':
             logging.info('Parsing linkedin')
