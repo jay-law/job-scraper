@@ -4,6 +4,7 @@ Main controller function.  See `python3 main.py --help` for help
 import argparse
 import logging
 import os
+import sys
 
 from parsers.linkedin_parser import parse_linkedin_postings
 from scrapers.linkedin_scraper import scrape_linkedin_postings
@@ -60,7 +61,7 @@ def main():
             parse_linkedin_postings(posting_keywords)
 
     logging.info("Finished execution.  Exiting application.")
-    exit()
+    sys.exit()
 
 if __name__ == "__main__":
 

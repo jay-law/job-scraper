@@ -1,4 +1,6 @@
-"""blah"""
+"""
+File contains scraper function for LinkedIn
+"""
 import datetime
 import json
 import logging
@@ -21,7 +23,7 @@ def scrape_linkedin_postings(postings_to_scrape: int):
         logging.info('Creating directory - %s', output_dir_name)
         os.makedirs(output_dir_name)
 
-    # todo - convert to join
+    # later - convert to join
     output_file_prefix = "data/html/jobid_"
 
     logging.info('Reading in creds')
