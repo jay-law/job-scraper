@@ -1,33 +1,37 @@
-from bs4 import BeautifulSoup
-import os
-import pprint
-import pandas as pd
-import re
-import logging
+"""
+File contains parser function for LinkedIn
+"""
 import datetime
+import logging
+import os
+import re
+import pandas as pd
 
-pp = pprint.PrettyPrinter()
+from bs4 import BeautifulSoup
+
 
 def parse_linkedin_postings(posting_keywords: list):
-
+    """
+    Parses the postings provided by the scraper function.
+    """
    # Ensure input dir exists
     input_dir_name = os.path.join(os.getcwd(),'data','html')
     if not os.path.exists(input_dir_name):
-        logging.error('The following directory does not exist - ' + input_dir_name)
+        logging.error('The following directory does not exist - %s', input_dir_name)
         logging.error('Parsing cannot continue without input data.  Exiting application.')
         return
 
     # Ensure input files exist
     input_files = os.listdir(input_dir_name)
     if len(input_files) == 0:
-        logging.error('No html files to parse in - ' + input_dir_name)
+        logging.error('No html files to parse in - %s', input_dir_name)
         logging.error('Parsing cannot continue without input data.  Exiting application.')
         return
 
     # Ensure output dir exists
     output_dir_name = os.path.join(os.getcwd(), 'data', 'csv')
     if not os.path.exists(output_dir_name):
-        logging.info('Creating directory - ' + output_dir_name)
+        logging.info('Creating directory - %s', output_dir_name)
         os.makedirs(output_dir_name)
 
     output_file_name = os.path.join(os.getcwd(), 'data', 'csv', 'parsed.csv')
@@ -42,27 +46,25 @@ def parse_linkedin_postings(posting_keywords: list):
         posting_info = {}
         error_info = {}
 
-        # Acts as the index for dataframe
+        # Use jobid as the index for dataframe
         jobid = filename.split('_')
         jobid = jobid[1]
-        
-        logging.info(jobid + ' - Parsing job ')
-
+        logging.info('%s - Parsing job ', jobid)
         posting_info['jobid'] = [jobid]
         error_info['jobid'] = [jobid]
 
+        # Assume no errors
         posting_info['error_flg'] = 0
 
+        # Create BeautifulSoup object from html element
         input_file_name = os.path.join(os.getcwd(),input_dir_name, filename)
-        input_file = open(file=input_file_name, mode='r')
+        input_file = open(file=input_file_name, mode='r', encoding='UTF-8')
         soup = BeautifulSoup(input_file, "html.parser")
-        
-        # job title
+        # Set job title
         # t-24 OR t-16 should work
         temp_title = soup.find(class_ = 't-24').text.strip()
-        posting_info['title'] = temp_title 
-        
-        # posting url
+        posting_info['title'] = temp_title
+        # Set posting url
         posting_info['posting_url'] = 'https://www.linkedin.com/jobs/view/' + jobid
 
         # company info
@@ -77,19 +79,18 @@ def parse_linkedin_postings(posting_keywords: list):
 
         # workplace_type. looking for remote
         # remote (f_WT=2) in url
-        temp_workplace_type = soup.find(class_ = 'jobs-unified-top-card__workplace-type').text.strip()
+        temp_workplace_type = soup.find(
+            class_ = 'jobs-unified-top-card__workplace-type').text.strip()
         posting_info['workplace_type'] = temp_workplace_type
-        
         # Grab hours, level, company_size, and company_industry
-        # syntax should be: 
+        # syntax should be:
         # hours · level
         # company_size · company_industry
         # some postings have errors in the syntax
         temp_company_info = soup.find_all(string=re.compile(r' · '))
-        
         # Some elements don't always load
         if len(temp_company_info) == 0:
-            logging.error(jobid + ' - See error file for more info.')
+            logging.error('%s - See error file for more info.', jobid)
 
             error_info['error_message'] = 'Company info does not exist or was not loaded'
             error_info['element'] = 'Element is missing'
@@ -108,9 +109,9 @@ def parse_linkedin_postings(posting_keywords: list):
                 logging.debug(jobid + ' - ' + section)
 
                 if not len(section_split) == 2:
-                    logging.error(jobid + ' - See error file for more info.')
-                    
-                    error_info['error_message'] = 'Posting info section doesnt have exactly two elements when splitting on \' · \''
+                    logging.error('%s - See error file for more info.', jobid)
+                    error_info['error_message'] = 'Posting info section doesnt have exactly ' \
+                        'two elements when splitting on \' · \''
                     error_info['element'] = section
                     error_value = 'ERROR'
                     posting_info['company_size'] = error_value
@@ -136,12 +137,10 @@ def parse_linkedin_postings(posting_keywords: list):
         temp_keyword_match_hit = []
         for keyword in posting_keywords:
             temp_keyword_match = soup.find_all(string=re.compile(keyword))
-            
             if len(temp_keyword_match) == 0:
                 continue
 
             temp_keyword_match_hit.append(keyword)
-                
         # Add keyword hits to single df cell
         posting_info['keyword_match'] = " | ".join(str(x) for x in temp_keyword_match_hit)
 
@@ -161,14 +160,13 @@ def parse_linkedin_postings(posting_keywords: list):
 
         ########################################
 
-
         # metadata
         posting_df['md_filename'] = filename
         error_df['md_filename'] = filename
 
         time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         posting_df['md_datetime'] = time_stamp
-        error_df['md_datetime'] = time_stamp       
+        error_df['md_datetime'] = time_stamp
 
         # Convert dict to dataframe
         temp_df = pd.DataFrame.from_dict(posting_info)
@@ -180,9 +178,9 @@ def parse_linkedin_postings(posting_keywords: list):
 
         input_file.close()
 
-    logging.info('Exporting to ' + output_file_name)
+    logging.info('Exporting to %s', output_file_name)
     posting_df.to_csv(output_file_name)
-    logging.info('Exporting errors to ' + output_file_name_errors)
+    logging.info('Exporting errors to %s', output_file_name_errors)
     error_df.to_csv(output_file_name_errors)
 
     return
