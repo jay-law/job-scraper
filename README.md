@@ -35,6 +35,19 @@ Directories:
     - Not in source control
     - Contains logs created during execution
 
+## `creds.json` File
+
+Syntax should be as follows:
+
+```json
+{
+    "linkedin": {
+        "username": "jay-law@gmail.com",
+        "password": "password1"
+    }
+}
+```
+
 # Usage
 
 ## Configure Environment
@@ -78,7 +91,7 @@ $ pip install -r requirements.txt
 ########################
 
 # Add modules as needed
-$ python3 -m pip uninstall SOME_NEW_MODULE
+$ python3 -m pip install SOME_NEW_MODULE
 
 # Update requirements if modules were added
 $ python3 -m pip freeze > requirements.txt
@@ -86,7 +99,9 @@ $ python3 -m pip freeze > requirements.txt
 # Add, commit, and push in git
 $ git add *
 $ git commit -m 'git commit message'
-$ git push
+$ git push -u origin BRANCH_NAME
+
+# Create a pull request
 ```
 
 ## Execution
