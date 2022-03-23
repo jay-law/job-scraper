@@ -4,20 +4,40 @@ import pprint
 import pandas as pd
 import re
 import logging
+import datetime
 
 pp = pprint.PrettyPrinter()
 
 def parse_linkedin_postings(posting_keywords: list):
 
-    output_file_name = 'data/csv/parsed.csv'
-    output_file_name_errors = 'data/csv/parsed_errors.csv'
+   # Ensure input dir exists
+    input_dir_name = os.path.join(os.getcwd(),'data','html')
+    if not os.path.exists(input_dir_name):
+        logging.error('The following directory does not exist - ' + input_dir_name)
+        logging.error('Parsing cannot continue without input data.  Exiting application.')
+        return
+
+    # Ensure input files exist
+    input_files = os.listdir(input_dir_name)
+    if len(input_files) == 0:
+        logging.error('No html files to parse in - ' + input_dir_name)
+        logging.error('Parsing cannot continue without input data.  Exiting application.')
+        return
+
+    # Ensure output dir exists
+    output_dir_name = os.path.join(os.getcwd(), 'data', 'csv')
+    if not os.path.exists(output_dir_name):
+        logging.info('Creating directory - ' + output_dir_name)
+        os.makedirs(output_dir_name)
+
+    output_file_name = os.path.join(os.getcwd(), 'data', 'csv', 'parsed.csv')
+    output_file_name_errors = os.path.join(os.getcwd(), 'data', 'csv', 'parsed_errors.csv')
 
     # Parent dataframes that will be exported
     posting_df = pd.DataFrame()
     error_df = pd.DataFrame()
 
-    input_dir = os.path.join(os.getcwd(),'data/html')
-    for filename in os.listdir(input_dir):
+    for filename in input_files:
 
         posting_info = {}
         error_info = {}
@@ -33,7 +53,7 @@ def parse_linkedin_postings(posting_keywords: list):
 
         posting_info['error_flg'] = 0
 
-        input_file_name = os.path.join(os.getcwd(),input_dir, filename)
+        input_file_name = os.path.join(os.getcwd(),input_dir_name, filename)
         input_file = open(file=input_file_name, mode='r')
         soup = BeautifulSoup(input_file, "html.parser")
         
@@ -108,6 +128,9 @@ def parse_linkedin_postings(posting_keywords: list):
                     posting_info['hours'] = section_split[0]
                     posting_info['level'] = section_split[1]
 
+        ########################################
+        # Move this to a different section later
+
         # Find keywords
         #posting_keywords = ['rotation', 'on-call']
         temp_keyword_match_hit = []
@@ -121,6 +144,31 @@ def parse_linkedin_postings(posting_keywords: list):
                 
         # Add keyword hits to single df cell
         posting_info['keyword_match'] = " | ".join(str(x) for x in temp_keyword_match_hit)
+
+        posting_info['recruiter_flg'] = 0
+
+        recruiting_industry = [
+            'Staffing and Recruiting',
+            'Business Consulting and Services']
+        recruiting_companies = [
+            'Dice',
+            'Motion Recruitment',
+            'Catapult Solutions Group']
+        if posting_info['company_industry'] in recruiting_industry:
+            posting_info['recruiter_flg'] = 1
+        elif posting_info['company_name'] in recruiting_companies:
+            posting_info['recruiter_flg'] = 1
+
+        ########################################
+
+
+        # metadata
+        posting_df['md_filename'] = filename
+        error_df['md_filename'] = filename
+
+        time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        posting_df['md_datetime'] = time_stamp
+        error_df['md_datetime'] = time_stamp       
 
         # Convert dict to dataframe
         temp_df = pd.DataFrame.from_dict(posting_info)

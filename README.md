@@ -1,4 +1,45 @@
-# Configure Environment
+# Introduction
+
+Job boards (like LinkedIn) can be a good source for finding job openings.  Unfortunately the search results cannot always be filtered to a usable degree.  This application lets users scrape, parse, and filter jobs with more flexability provided by the default search.
+
+Currently only LinkedIn is supported.
+
+# Project Structure
+
+Files:
+- `main.py` - Application to be executed
+- `README.md` - Documentation
+- `.gitignore` - Git ignore
+- `requirements.txt` - Requirements file for PIP 
+- `creds.json` - Credential file 
+
+Directories:
+- `parsers` - Contains parser(s)
+- `scrapers` - Contains scraper(s)
+- `support` 
+    - Contains `geckodriver` driver for FireFox which is used by Selenium
+    - Download the latest driver from the [Mozilla GeckoDriver repo in GitHub](https://github.com/mozilla/geckodriver)
+- `venv` 
+    - Not in source control
+    - Virtual environment for Python execution.  Gets created with `python3 -m venv venv` (see below)
+- `data/html` 
+    - Not in source control
+    - Contains HTML elements for a specific job posting
+    - Populated by a scraper
+- `data/csv` 
+    - Not in source control
+    - Contains parsed information in a csv table
+    - Populated by a parser
+    - Also contains an error table
+- `logs` 
+    - Not in source control
+    - Contains logs created during execution
+
+# Usage
+
+## Configure Environment
+
+Tested on Ubuntu Ubuntu 20.04.4 LTS (64-bit) and Python 3.8.10.
 
 ```bash
 # Confirm Python 3 is installed
@@ -6,17 +47,16 @@ $ python3 --version
 
 Python 3.8.10
 
-# Install venv.  I thought this shipped with python?
+# Install venv
 $ sudo apt install python3.8-venv
 
 # Install pip
 $ sudo apt install python3-pip
 ```
 
-# Contributing
+## Contributing
 
 ```bash
-
 # Clone repo
 $ git clone git@github.com:jay-law/job-scraper.git
 $ cd job-scraper/
@@ -46,7 +86,9 @@ $ git commit -m 'git commit message'
 $ git push
 ```
 
-# Execution
+## Execution
+
+There are two phase.  First is scraping the postings.  Second is parsing the scraped information.  Therefore the scraping phase must occur before the parsing phase.
 
 ```bash
 # Scrape linkedin

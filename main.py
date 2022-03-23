@@ -39,9 +39,9 @@ def main():
     if site == 'linkedin':
         if action == 'scrape':
             logging.info('Scraping linkedin')
-            # end_posting_count has a default of 25 as 25 postings are loaded
-            # per page 
-            scrape_linkedin_postings(end_posting_count=300)
+            # postings_to_scrape will round up by 25 as 25
+            # postings are loaded per page 
+            scrape_linkedin_postings(postings_to_scrape=5)
         if action == 'parse':
             logging.info('Parsing linkedin')
             posting_keywords = ['rotation', 'on-call', '24/7', 'client', 'clients']
