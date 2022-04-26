@@ -179,8 +179,8 @@ def parse_linkedin_postings(posting_keywords: list):
         input_file.close()
 
     logging.info('Exporting to %s', output_file_name)
-    posting_df.to_csv(output_file_name)
+    posting_df.to_csv(output_file_name, index=False)
     logging.info('Exporting errors to %s', output_file_name_errors)
-    error_df.to_csv(output_file_name_errors)
+    error_df.to_csv(output_file_name_errors, index=False)
 
     return
