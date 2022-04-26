@@ -1,5 +1,4 @@
-"""
-File contains parser function for LinkedIn
+"""Parser module will process and aggregate job posting files.
 """
 import datetime
 import logging
@@ -11,8 +10,18 @@ from bs4 import BeautifulSoup
 
 
 def parse_linkedin_postings(posting_keywords: list):
-    """
-    Parses the postings provided by the scraper function.
+    """Parses the postings provided by the scraper function.
+
+    Each job posting under /data/html/ is opened and parsed for fields
+    (examples: company, job title, number of employees).  Beautiful soup
+    is used to parse the html document while Pandas is used to hold the
+    parsed information.
+
+    Args:
+        posting_keywords: Identifies keywords to be avoided in a posting.
+
+    Returns:
+        n/a: Nothing is returned.  Data is directly exported to a csv file.
     """
    # Ensure input dir exists
     input_dir_name = os.path.join(os.getcwd(),'data','html')
@@ -130,7 +139,7 @@ def parse_linkedin_postings(posting_keywords: list):
                     posting_info['level'] = section_split[1]
 
         ########################################
-        # Move this to a different section later
+        # Move this to a different section later (probably gui)
 
         # Find keywords
         #posting_keywords = ['rotation', 'on-call']

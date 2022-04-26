@@ -96,6 +96,9 @@ $ python3 -m pip install SOME_NEW_MODULE
 # Update requirements if modules were added
 $ python3 -m pip freeze > requirements.txt
 
+# Lint befor commiting
+$ pylint *
+
 # Add, commit, and push in git
 $ git add *
 $ git commit -m 'git commit message'
@@ -116,3 +119,24 @@ $ python3 main.py linkedin scrape
 $ python3 main.py linkedin parse
 ```
 
+# Other
+
+## Improvements
+
+###  Move Keyword Logic
+
+The `linkedin_parser.py` file has logic to identify key terms like "on-call rotation" or industries like "Staffing and Recruiting".  
+
+Ideally the GUI front-end would handle this type of functionality.  Until a GUI option is available, the logic should probably be moved to a seperate function.
+
+### Add File Args to Scraper/Parser
+
+The import and export file paths are set in each method/module.  This adds bloat to each module as much of the code is reusable.  File handling can be moved to the main controller or a new module, file names would be passed to the scraper/parser functions.
+
+### Improve Secret Handling
+
+The current implementation of importing credentials is almost certainly insecure.
+
+### Setup Packaging
+
+This script has only been used locally as the job postings generated can be pasted into a browser.  If this program was to be "productionized" then proper packaging should be implemented.  

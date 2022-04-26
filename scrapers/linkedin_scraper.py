@@ -1,5 +1,5 @@
-"""
-File contains scraper function for LinkedIn
+"""Scraper module will open a FireFox browser and scrape html
+for job postings on LinkedIn.
 """
 import datetime
 import json
@@ -13,9 +13,25 @@ from selenium import webdriver
 
 
 def scrape_linkedin_postings(postings_to_scrape: int):
-    """
-    Scrapes LinkedIn for job postings.  Each posting is exported to an html file
-    in the data/html directory
+    """Scrapes LinkedIn for job postings.
+
+    Selenium will open a browser, login to LinkedIn, and perform a job
+    search.  By default LinkedIn will return ~7 job posting 'cards'.  Each
+    card is clicked which triggers LinkedIn to load the job details.  Job
+    details are then scraped and stored into a unique file in the /data/html/
+    dir.
+
+    Once scraped, the script will click the next job card.  The process is then
+    repeated until all cards (25 total per page) have been scraped.  The next
+    page of jobs will then be loaded.
+
+    Args:
+        postings_to_scrape: Specifies the number of postings to scrape
+        from LinkedIn.
+
+    Returns:
+        n/a: Nothing is returned.  Data is directly exported to multiple html
+        files.
     """
     # Ensure output dir exists
     output_dir_name = os.path.join(os.getcwd(), 'data', 'html')

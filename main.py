@@ -1,5 +1,6 @@
-"""
-Main controller function.  See `python3 main.py --help` for help
+"""job-scraper will scrape LinkedIn job postings, parse out details about
+each posting, then combine all of the information into a single useable
+csv file.
 """
 import argparse
 import logging
@@ -11,8 +12,13 @@ from scrapers.linkedin_scraper import scrape_linkedin_postings
 
 
 def init_parser():
-    """
-    Initializes argument parser
+    """Initializes argument parser.
+
+    Args:
+        n/a
+
+    Returns:
+        Arguments provided by the user.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("site",
@@ -24,8 +30,7 @@ def init_parser():
     return parser.parse_args()
 
 def main():
-    """
-    Main function
+    """Main controller function used to call child functions/modules.
     """
     # Ensure logs dir exists
     log_file_dir_name = os.path.join(os.getcwd(), 'logs')
