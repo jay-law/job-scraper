@@ -78,8 +78,7 @@ def main():
               config,
               postings_to_scrape=5)
         if args_dict["action"] == 'parse':
-            posting_keywords = ['rotation', 'on-call', '24/7', 'client', 'clients']
-            parse_linkedin_postings(config, posting_keywords)
+            parse_linkedin_postings(config)
 
     logging.info("Finished execution.  Exiting application.")
     sys.exit()
