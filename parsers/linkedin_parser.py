@@ -9,7 +9,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 def export_csv(config, all_postings, all_postings_err):
-    """Docstring
+    """export_csv
     """
     output_file = config['Parser']['linkedin_output_file']
     output_file_errors = config['Parser']['linkedin_output_file_err']
@@ -21,7 +21,7 @@ def export_csv(config, all_postings, all_postings_err):
     pd.DataFrame(all_postings_err).to_csv(output_file_errors, index=False)
 
 def flag_error(posting_info, error_info, err_msg):
-    """Docstring
+    """flag_error
     """
     error_info['error_message'] = err_msg
     error_info['element'] = 'Element is missing'
@@ -33,7 +33,7 @@ def flag_error(posting_info, error_info, err_msg):
     posting_info['error_flg'] = 1
 
 def parse_details(config, posting_file, posting_info, error_info):
-    """Docstring
+    """parse_details
     """
     # Use jobid as the index for dataframe
     jobid = posting_file.split('_')
@@ -79,7 +79,6 @@ def parse_details(config, posting_file, posting_info, error_info):
     # company_size · company_industry
     # some postings have errors in the syntax
     temp_company_info = soup.find_all(string=re.compile(r' · '))
-    print('-----------')
 
     # Some elements don't always load
     if len(temp_company_info) == 0:
@@ -111,7 +110,7 @@ def parse_details(config, posting_file, posting_info, error_info):
             posting_info['level'] = section_split[1]
 
 def insert_metadata(posting_file, posting_info, error_info):
-    """Docstring
+    """insert_metadata
     """
     posting_info['md_file'] = posting_file
     error_info['md_file'] = posting_file

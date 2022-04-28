@@ -27,26 +27,15 @@ def init_parser():
     parser.add_argument("action",
         choices=["scrape", "parse"],
         help="Action to perform")
-    return parser.parse_args()
+    return vars(parser.parse_args())
 
 def load_config():
     """Docstring
     """
     config = configparser.ConfigParser(
       interpolation=configparser.ExtendedInterpolation())
-
     config.read('config.ini')
 
-    print('Config:')
-    for section in config.sections():
-        print(section)
-        for key in config[section]:
-            print(' ', key, config[section][key])
-    ## temp = config['Scraper']['linkedin_output_dir']
-    # print('temp config')
-    # print(type(config))
-
-    print('-------------')
     return config
 
 def main():
@@ -63,21 +52,17 @@ def main():
         format='[%(asctime)s] [%(levelname)s] - %(message)s',
         filemode='w+')
 
-    logging.info('Initializing argparse:')
     args = init_parser()
-    args_dict = vars(args)
+    logging.info('Starting app with the following input args: %s', args)
 
-    logging.info('Starting application with the following arg(s):')
-    logging.info(args_dict)
-
-    if args_dict["site"] == 'linkedin':
-        if args_dict["action"] == 'scrape':
+    if args["site"] == 'linkedin':
+        if args["action"] == 'scrape':
             # postings_to_scrape will round up by 25 as 25
             # postings are loaded per page
             scrape_linkedin_postings(
               config,
               postings_to_scrape=5)
-        if args_dict["action"] == 'parse':
+        if args["action"] == 'parse':
             parse_linkedin_postings(config)
 
     logging.info("Finished execution.  Exiting application.")

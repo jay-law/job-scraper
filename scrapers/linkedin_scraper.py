@@ -11,6 +11,9 @@ import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
+
+
+
 def login(config, driver):
     """Logging into LinkedIn
     """
@@ -32,8 +35,6 @@ def login(config, driver):
 
     submit_button = driver.find_element_by_xpath("//button[@aria-label='Sign in']")
     submit_button.click()
-
-    return
 
 def export_html(config, soup):
     """Export to html file
@@ -63,7 +64,6 @@ def export_html(config, soup):
     with open(output_file, 'w+', encoding='UTF-8') as file:
         file.write(posting_details.prettify())
 
-    return
 
 def scrape_linkedin_postings(config, postings_to_scrape: int):
     """Scrapes LinkedIn for job postings.
@@ -88,7 +88,7 @@ def scrape_linkedin_postings(config, postings_to_scrape: int):
     """
     logging.info('Scraping linkedin')
 
-    logging.info('Opening browser')
+    logging.info('Initalizing browser')
     driver = webdriver.Firefox(
         executable_path=config['Paths']['gecko_driver'],
         service_log_path=config['Paths']['gecko_log'])
@@ -146,5 +146,3 @@ def scrape_linkedin_postings(config, postings_to_scrape: int):
             postings_scraped_page += 1
     logging.info('Closing browser')
     driver.close()
-
-    return
