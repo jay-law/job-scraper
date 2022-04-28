@@ -12,7 +12,60 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 
 
-def scrape_linkedin_postings(postings_to_scrape: int):
+
+
+def login(config, driver):
+    """Logging into LinkedIn
+    """
+    logging.info('Reading in creds')
+    with open(config['Paths']['creds'], encoding='UTF-8') as creds:
+        cred_dict = json.load(creds)['linkedin']
+    logging.info('User name - %s', cred_dict['username'])
+
+    logging.info('Navigating to login page')
+    url = 'https://www.linkedin.com/login'
+    driver.get(url)
+
+    logging.info('Signing in')
+    username_field = driver.find_element_by_id('username')
+    username_field.send_keys(cred_dict['username'])
+
+    password_field = driver.find_element_by_id('password')
+    password_field.send_keys(cred_dict['password'])
+
+    submit_button = driver.find_element_by_xpath("//button[@aria-label='Sign in']")
+    submit_button.click()
+
+def export_html(config, soup):
+    """Export to html file
+    """
+
+    output_file_prefix = os.path.join(
+        config['Scraper']['linkedin_out_dir'],
+        'jobid_')
+
+    # Find jobid - it's easier with beautifulsoup
+    # Example:
+    # <a ... href="/jobs/view/2963302086/?alternateChannel...">
+    logging.info('Finding Job ID')
+    posting_details = soup.find(class_="job-view-layout")
+    anchor_link = posting_details.find('a')
+    jobid_search = re.search(r'view/(\d*)/', anchor_link['href'])
+    jobid = jobid_search.group(1)
+
+    # File name syntax:
+    # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
+    # Example:
+    # jobid_2886320758_20220322_120555.html
+    time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = output_file_prefix + jobid + '_' + time_stamp + '.html'
+
+    logging.info('Exporting jobid %s to %s', jobid, output_file)
+    with open(output_file, 'w+', encoding='UTF-8') as file:
+        file.write(posting_details.prettify())
+
+
+def scrape_linkedin_postings(config, postings_to_scrape: int):
     """Scrapes LinkedIn for job postings.
 
     Selenium will open a browser, login to LinkedIn, and perform a job
@@ -33,46 +86,17 @@ def scrape_linkedin_postings(postings_to_scrape: int):
         n/a: Nothing is returned.  Data is directly exported to multiple html
         files.
     """
-    # Ensure output dir exists
-    output_dir_name = os.path.join(os.getcwd(), 'data', 'html')
-    if not os.path.exists(output_dir_name):
-        logging.info('Creating directory - %s', output_dir_name)
-        os.makedirs(output_dir_name)
+    logging.info('Scraping linkedin')
 
-    # later - convert to join
-    output_file_prefix = "data/html/jobid_"
-
-    logging.info('Reading in creds')
-    cred_file_name = 'creds.json'
-    if not os.path.exists(cred_file_name):
-        logging.error('The following file does not exist - %s', cred_file_name)
-        logging.error('Scraping cannot continue without cred file.  Exiting application.')
-        return
-    cred_dict = json.load(open(cred_file_name, encoding='UTF-8'))
-    cred_dict = cred_dict['linkedin']
-    logging.info('User name - %s', cred_dict['username'])
-
-    logging.info('Opening browser')
+    logging.info('Initalizing browser')
     driver = webdriver.Firefox(
-        executable_path=os.path.join(os.getcwd(), 'support', 'geckodriver'),
-        service_log_path=os.path.join(os.getcwd(), 'logs', 'geckodriver.log'))
+        executable_path=config['Paths']['gecko_driver'],
+        service_log_path=config['Paths']['gecko_log'])
 
     driver.implicitly_wait(10)
     driver.set_window_size(1800, 600)
 
-    logging.info('Navigating to login page')
-    url = 'https://www.linkedin.com/login'
-    driver.get(url)
-
-    logging.info('Signing in')
-    username_field = driver.find_element_by_id('username')
-    username_field.send_keys(cred_dict['username'])
-
-    password_field = driver.find_element_by_id('password')
-    password_field.send_keys(cred_dict['password'])
-
-    submit_button = driver.find_element_by_xpath("//button[@aria-label='Sign in']")
-    submit_button.click()
+    login(config, driver)
 
     postings_scraped_total = 0
 
@@ -112,31 +136,9 @@ def scrape_linkedin_postings(postings_to_scrape: int):
             card_anchor_list[postings_scraped_total].click()
             time.sleep(2)   # hopefully helps with missing content
 
-            # Initialize beautifulsoup
-            # It's used mainly for exporting
+            # Initialize beautifulsoup (used for simple exporting)
             soup = BeautifulSoup(driver.page_source, "html.parser")
-
-            # Find jobid - it's easier with beautifulsoup
-            # Example:
-            # <a ... href="/jobs/view/2963302086/?alternateChannel...">
-            logging.info('Finding Job ID')
-            posting_details = soup.find(class_="job-view-layout")
-            anchor_link = posting_details.find('a')
-            jobid_search = re.search(r'view/(\d*)/', anchor_link['href'])
-            jobid = jobid_search.group(1)
-            logging.info('Exporting jobid %s', jobid)
-
-            # File name syntax:
-            # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
-            # Example:
-            # jobid_2886320758_20220322_120555.html
-            time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_file_name = output_file_prefix + jobid + '_' + time_stamp + '.html'
-            logging.info('Exporting to %s', output_file_name)
-
-            output_file = open(output_file_name, 'w+', encoding='UTF-8')
-            output_file.write(posting_details.prettify())
-            output_file.close()
+            export_html(config, soup)
 
             logging.info('END - Process new posting')
 
@@ -144,5 +146,3 @@ def scrape_linkedin_postings(postings_to_scrape: int):
             postings_scraped_page += 1
     logging.info('Closing browser')
     driver.close()
-
-    return
