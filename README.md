@@ -123,6 +123,10 @@ $ python3 main.py linkedin parse
 
 ## Improvements
 
+### Write Tests
+
+Write some unit tests.
+
 ###  Move Keyword Logic
 
 The `linkedin_parser.py` file has logic to identify key terms like "on-call rotation" or industries like "Staffing and Recruiting".  
@@ -139,4 +143,4 @@ The current implementation of importing credentials is almost certainly insecure
 
 ### Setup Packaging
 
-This script has only been used locally as the job postings generated can be pasted into a browser.  If this program was to be "productionized" then proper packaging should be implemented.  
+This script has only been used locally as the job postings generated can be pasted into a browser.  If this program was to be "productionized" then proper packaging should be implemented.
