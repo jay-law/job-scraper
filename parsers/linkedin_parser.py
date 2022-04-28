@@ -8,8 +8,7 @@ import pandas as pd
 
 from bs4 import BeautifulSoup
 
-
-def parse_linkedin_postings(posting_keywords: list):
+def parse_linkedin_postings(config, posting_keywords: list):
     """Parses the postings provided by the scraper function.
 
     Each job posting under /data/html/ is opened and parsed for fields
@@ -23,40 +22,24 @@ def parse_linkedin_postings(posting_keywords: list):
     Returns:
         n/a: Nothing is returned.  Data is directly exported to a csv file.
     """
-   # Ensure input dir exists
-    input_dir_name = os.path.join(os.getcwd(),'data','html')
-    if not os.path.exists(input_dir_name):
-        logging.error('The following directory does not exist - %s', input_dir_name)
-        logging.error('Parsing cannot continue without input data.  Exiting application.')
-        return
+    logging.info('Parsing linkedin')
 
-    # Ensure input files exist
-    input_files = os.listdir(input_dir_name)
-    if len(input_files) == 0:
-        logging.error('No html files to parse in - %s', input_dir_name)
-        logging.error('Parsing cannot continue without input data.  Exiting application.')
-        return
-
-    # Ensure output dir exists
-    output_dir_name = os.path.join(os.getcwd(), 'data', 'csv')
-    if not os.path.exists(output_dir_name):
-        logging.info('Creating directory - %s', output_dir_name)
-        os.makedirs(output_dir_name)
-
-    output_file_name = os.path.join(os.getcwd(), 'data', 'csv', 'parsed.csv')
-    output_file_name_errors = os.path.join(os.getcwd(), 'data', 'csv', 'parsed_errors.csv')
+    logging.info('Loading config')
+    input_dir = config['Parser']['linkedin_input_dir']
+    output_file = config['Parser']['linkedin_output_file']
+    output_file_errors = config['Parser']['linkedin_output_file_err']
 
     # Parent dataframes that will be exported
     posting_df = pd.DataFrame()
     error_df = pd.DataFrame()
 
-    for filename in input_files:
+    for file in os.listdir(input_dir):
 
         posting_info = {}
         error_info = {}
 
         # Use jobid as the index for dataframe
-        jobid = filename.split('_')
+        jobid = file.split('_')
         jobid = jobid[1]
         logging.info('%s - Parsing job ', jobid)
         posting_info['jobid'] = [jobid]
@@ -66,7 +49,7 @@ def parse_linkedin_postings(posting_keywords: list):
         posting_info['error_flg'] = 0
 
         # Create BeautifulSoup object from html element
-        input_file_name = os.path.join(os.getcwd(),input_dir_name, filename)
+        input_file_name = os.path.join(input_dir, file)
         input_file = open(file=input_file_name, mode='r', encoding='UTF-8')
         soup = BeautifulSoup(input_file, "html.parser")
         # Set job title
@@ -170,8 +153,8 @@ def parse_linkedin_postings(posting_keywords: list):
         ########################################
 
         # metadata
-        posting_df['md_filename'] = filename
-        error_df['md_filename'] = filename
+        posting_df['md_file'] = file
+        error_df['md_file'] = file
 
         time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         posting_df['md_datetime'] = time_stamp
@@ -187,9 +170,9 @@ def parse_linkedin_postings(posting_keywords: list):
 
         input_file.close()
 
-    logging.info('Exporting to %s', output_file_name)
-    posting_df.to_csv(output_file_name, index=False)
-    logging.info('Exporting errors to %s', output_file_name_errors)
-    error_df.to_csv(output_file_name_errors, index=False)
+    logging.info('Exporting to %s', output_file)
+    posting_df.to_csv(output_file, index=False)
+    logging.info('Exporting errors to %s', output_file_errors)
+    error_df.to_csv(output_file_errors, index=False)
 
     return
