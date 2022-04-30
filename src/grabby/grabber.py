@@ -5,8 +5,8 @@ csv file.
 import argparse
 import configparser
 import logging
-import os
 import sys
+import os
 
 from parsers.linkedin_parser import parse_linkedin_postings
 from scrapers.linkedin_scraper import scrape_linkedin_postings
@@ -38,11 +38,21 @@ def load_config():
 
     return config
 
+def create_dirs(config):
+    """Docstring
+    """
+    # for item in config['Directories']:
+    for dir_path in config.items('Directories'):
+        if not os.path.exists(dir_path[1]):
+            os.mkdir(dir_path[1])
+
 def main():
     """Main controller function used to call child functions/modules.
     """
     # Load config
     config = load_config()
+
+    create_dirs(config)
 
     # Initialize logging
     log_file_name = config['Paths']['app_log']
