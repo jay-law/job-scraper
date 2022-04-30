@@ -67,6 +67,18 @@ $ sudo apt install python3.8-venv
 $ sudo apt install python3-pip
 ```
 
+## Execution
+
+There are two phase.  First is scraping the postings.  Second is parsing the scraped information.  Therefore the scraping phase must occur before the parsing phase.
+
+```bash
+# Scrape linkedin
+$ python3 src/job_scraper/go_module.py linkedin scrape
+
+# Parse linkedin
+$ python3 src/job_scraper/go_module.py linkedin parse
+```
+
 ## Contributing
 
 ```bash
@@ -84,7 +96,7 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 
 # Install requirements
-$ pip install -r requirements.txt
+$ python3 -m pip install -r requirements.txt
 
 ########################
 # make changes to code
@@ -107,40 +119,25 @@ $ git push -u origin BRANCH_NAME
 # Create a pull request
 ```
 
-## Execution
-
-There are two phase.  First is scraping the postings.  Second is parsing the scraped information.  Therefore the scraping phase must occur before the parsing phase.
+## Publishing
 
 ```bash
-# Scrape linkedin
-$ python3 main.py linkedin scrape
+$ python3 -m pip install --upgrade build
+$ python3 -m pip install --upgrade setuptools_scm
+$ python3 -m pip install --upgrade twine
 
-# Parse linkedin
-$ python3 main.py linkedin parse
+# Build 
+$ python3 -m build
+
+# Publish
+$ python3 -m twine upload --repository testpypi --skip-existing dist/*
 ```
 
-# Other
+# Roadmap
 
-## Improvements
-
-### Write Tests
-
-Write some unit tests.
-
-###  Move Keyword Logic
-
-The `linkedin_parser.py` file has logic to identify key terms like "on-call rotation" or industries like "Staffing and Recruiting".  
-
-Ideally the GUI front-end would handle this type of functionality.  Until a GUI option is available, the logic should probably be moved to a seperate function.
-
-### Add File Args to Scraper/Parser
-
-The import and export file paths are set in each method/module.  This adds bloat to each module as much of the code is reusable.  File handling can be moved to the main controller or a new module, file names would be passed to the scraper/parser functions.
-
-### Improve Secret Handling
-
-The current implementation of importing credentials is almost certainly insecure.
-
-### Setup Packaging
-
-This script has only been used locally as the job postings generated can be pasted into a browser.  If this program was to be "productionized" then proper packaging should be implemented.
+* [ ] Write unit tests
+* [ ] Improve secret handling
+* [ ] Add packaging
+* [x] Move paths to config file
+* [x] Move keyword logic
+* [x] Move keyword logic

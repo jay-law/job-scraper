@@ -4,7 +4,7 @@ import datetime
 import logging
 import os
 import re
-import pandas as pd
+import pandas
 
 from bs4 import BeautifulSoup
 
@@ -15,10 +15,10 @@ def export_csv(config, all_postings, all_postings_err):
     output_file_errors = config['Parser']['linkedin_output_file_err']
 
     logging.info('Exporting to %s', output_file)
-    pd.DataFrame(all_postings).to_csv(output_file, index=False)
+    pandas.DataFrame(all_postings).to_csv(output_file, index=False)
 
     logging.info('Exporting errors to %s', output_file_errors)
-    pd.DataFrame(all_postings_err).to_csv(output_file_errors, index=False)
+    pandas.DataFrame(all_postings_err).to_csv(output_file_errors, index=False)
 
 def flag_error(posting_info, error_info, err_msg):
     """flag_error

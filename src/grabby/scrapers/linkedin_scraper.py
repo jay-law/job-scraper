@@ -12,8 +12,6 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 
 
-
-
 def login(config, driver):
     """Logging into LinkedIn
     """
