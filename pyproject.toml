@@ -1,6 +1,3 @@
-# https://peps.python.org/pep-0621/
-# https://setuptools.pypa.io/en/latest/userguide/quickstart.html
-
 [project]
 name = "grabby"
 version = "0.0.1"

@@ -1,22 +1,15 @@
 # Introduction
 
-Job boards (like LinkedIn) can be a good source for finding job openings.  Unfortunately the search results cannot always be filtered to a usable degree.  This application lets users scrape, parse, and filter jobs with more flexability provided by the default search.
+Job boards (like LinkedIn) can be a good source for finding job openings.  Unfortunately the search results cannot always be filtered to a usable degree.  This application lets users scrape and parse jobs with more flexability provided by the default search.
 
 Currently only LinkedIn is supported.
 
 # Project Structure
 
-Files:
-- `main.py` - Application to be executed
-- `README.md` - Documentation
-- `.gitignore` - Git ignore
-- `requirements.txt` - Requirements file for PIP 
-- `creds.json` - Credential file 
-
 Directories:
-- `parsers` - Contains parser(s)
-- `scrapers` - Contains scraper(s)
-- `support` 
+- `src/grabby/parsers` - Contains parser(s)
+- `src/grabby/scrapers` - Contains scraper(s)
+- `src/grabby/support` 
     - Contains `geckodriver` driver for FireFox which is used by Selenium
     - Download the latest driver from the [Mozilla GeckoDriver repo in GitHub](https://github.com/mozilla/geckodriver)
 - `venv` 
@@ -140,4 +133,4 @@ $ python3 -m twine upload --repository testpypi --skip-existing dist/*
 * [x] Add packaging
 * [x] Move paths to config file
 * [x] Move keyword logic
-* [x] Move keyword logic
+* [ ] Set/include default config.ini for users installing with PIP

@@ -13,7 +13,7 @@ from selenium import webdriver
 
 
 def login(config, driver):
-    """Logging into LinkedIn
+    """Log into LinkedIn
     """
     logging.info('Reading in creds')
     with open(config['Paths']['creds'], encoding='UTF-8') as creds:
@@ -35,7 +35,7 @@ def login(config, driver):
     submit_button.click()
 
 def export_html(config, soup):
-    """Export to html file
+    """Export single posting to html file
     """
 
     output_file_prefix = os.path.join(
@@ -64,25 +64,7 @@ def export_html(config, soup):
 
 
 def scrape_linkedin_postings(config, postings_to_scrape: int):
-    """Scrapes LinkedIn for job postings.
-
-    Selenium will open a browser, login to LinkedIn, and perform a job
-    search.  By default LinkedIn will return ~7 job posting 'cards'.  Each
-    card is clicked which triggers LinkedIn to load the job details.  Job
-    details are then scraped and stored into a unique file in the /data/html/
-    dir.
-
-    Once scraped, the script will click the next job card.  The process is then
-    repeated until all cards (25 total per page) have been scraped.  The next
-    page of jobs will then be loaded.
-
-    Args:
-        postings_to_scrape: Specifies the number of postings to scrape
-        from LinkedIn.
-
-    Returns:
-        n/a: Nothing is returned.  Data is directly exported to multiple html
-        files.
+    """Main scraper function that controls program flow
     """
     logging.info('Scraping linkedin')
 

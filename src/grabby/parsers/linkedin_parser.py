@@ -9,7 +9,7 @@ import pandas
 from bs4 import BeautifulSoup
 
 def export_csv(config, all_postings, all_postings_err):
-    """export_csv
+    """Export all postings to CSV file
     """
     output_file = config['Parser']['linkedin_output_file']
     output_file_errors = config['Parser']['linkedin_output_file_err']
@@ -21,7 +21,7 @@ def export_csv(config, all_postings, all_postings_err):
     pandas.DataFrame(all_postings_err).to_csv(output_file_errors, index=False)
 
 def flag_error(posting_info, error_info, err_msg):
-    """flag_error
+    """Flag posting with an error
     """
     error_info['error_message'] = err_msg
     error_info['element'] = 'Element is missing'
@@ -33,7 +33,7 @@ def flag_error(posting_info, error_info, err_msg):
     posting_info['error_flg'] = 1
 
 def parse_details(config, posting_file, posting_info, error_info):
-    """parse_details
+    """Parse out posting details contained in an HTML file
     """
     # Use jobid as the index for dataframe
     jobid = posting_file.split('_')
@@ -110,7 +110,7 @@ def parse_details(config, posting_file, posting_info, error_info):
             posting_info['level'] = section_split[1]
 
 def insert_metadata(posting_file, posting_info, error_info):
-    """insert_metadata
+    """Insert metadata like datetime into posting info
     """
     posting_info['md_file'] = posting_file
     error_info['md_file'] = posting_file
@@ -120,18 +120,7 @@ def insert_metadata(posting_file, posting_info, error_info):
     error_info['md_datetime'] = time_stamp
 
 def parse_linkedin_postings(config):
-    """Parses the postings provided by the scraper function.
-
-    Each job posting under /data/html/ is opened and parsed for fields
-    (examples: company, job title, number of employees).  Beautiful soup
-    is used to parse the html document while Pandas is used to hold the
-    parsed information.
-
-    Args:
-        config:
-
-    Returns:
-        n/a: Nothing is returned.  Data is directly exported to a csv file.
+    """Main parser function that controls program flow
     """
     logging.info('Parsing linkedin')
 
