@@ -73,10 +73,10 @@ There are two phase.  First is scraping the postings.  Second is parsing the scr
 
 ```bash
 # Scrape linkedin
-$ python3 src/job_scraper/go_module.py linkedin scrape
+$ python3 src/grabby/grabber.py linkedin scrape
 
 # Parse linkedin
-$ python3 src/job_scraper/go_module.py linkedin parse
+$ python3 src/grabby/grabber.py linkedin parse
 ```
 
 ## Contributing
@@ -137,7 +137,7 @@ $ python3 -m twine upload --repository testpypi --skip-existing dist/*
 
 * [ ] Write unit tests
 * [ ] Improve secret handling
-* [ ] Add packaging
+* [x] Add packaging
 * [x] Move paths to config file
 * [x] Move keyword logic
 * [x] Move keyword logic
