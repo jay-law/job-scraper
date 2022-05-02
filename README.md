@@ -134,3 +134,4 @@ $ python3 -m twine upload --repository testpypi --skip-existing dist/*
 * [x] Move paths to config file
 * [x] Move keyword logic
 * [ ] Set/include default config.ini for users installing with PIP
+* [ ] Add CICD
