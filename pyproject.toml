@@ -1,6 +1,6 @@
 [project]
 name = "exfill"
-version = "0.0.9"
+version = "0.0.11"
 authors = [ 
     { name = "Jay Law", email = "mr-jay-law@protonmail.com" }
 ]
@@ -18,14 +18,15 @@ homepage = "https://github.com/jay-law/job-scraper"
 repository = "https://github.com/jay-law/job-scraper"
 documentation = "https://github.com/jay-law/job-scraper"
 
+[project.scripts]
+cli-script = "exfill.extractor:main"
+
 [build-system]
 requires = [
     "setuptools>=45", 
     "setuptools_scm[toml]>=6.2"
 ]
 build-backend = "setuptools.build_meta"
-
-
 
 [tool.setuptools]
 package-dir = {"" = "src"}

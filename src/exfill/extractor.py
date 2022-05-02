@@ -1,4 +1,4 @@
-"""grabby will scrape LinkedIn job postings, parse out details about
+"""exfill will scrape LinkedIn job postings, parse out details about
 each posting, then combine all of the information into a single useable
 csv file.
 """
@@ -26,9 +26,16 @@ def init_parser():
 def load_config():
     """Load config file
     """
+
+    config_file = os.path.dirname(__file__) + '/config.ini'
+    if not os.path.exists(config_file):
+        print('Exiting app as the following config file does not exist: ',
+          config_file, file=sys.stderr)
+        sys.exit()
+
     config = configparser.ConfigParser(
-      interpolation=configparser.ExtendedInterpolation())
-    config.read('config.ini')
+        interpolation=configparser.ExtendedInterpolation())
+    config.read(config_file)
 
     return config
 
