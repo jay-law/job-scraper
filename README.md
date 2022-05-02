@@ -112,20 +112,6 @@ $ git push -u origin BRANCH_NAME
 # Create a pull request
 ```
 
-## Publishing
-
-```bash
-$ python3 -m pip install --upgrade build
-$ python3 -m pip install --upgrade setuptools_scm
-$ python3 -m pip install --upgrade twine
-
-# Build 
-$ python3 -m build
-
-# Publish
-$ python3 -m twine upload --repository testpypi --skip-existing dist/*
-```
-
 # Roadmap
 
 * [ ] Write unit tests
@@ -133,5 +119,5 @@ $ python3 -m twine upload --repository testpypi --skip-existing dist/*
 * [x] Add packaging
 * [x] Move paths to config file
 * [x] Move keyword logic
-* [ ] Set/include default config.ini for users installing with PIP
+* [x] Set/include default config.ini for users installing with PIP
 * [x] Add CICD
