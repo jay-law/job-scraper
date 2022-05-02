@@ -13,7 +13,7 @@ jobs:
   build-and-publish:
 
     runs-on: ubuntu-latest
-    environment: test2
+    environment: test
     
     steps:
     - uses: actions/checkout@v3
