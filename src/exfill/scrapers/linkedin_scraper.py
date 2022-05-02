@@ -70,7 +70,9 @@ def scrape_linkedin_postings(config, postings_to_scrape: int):
 
     logging.info('Initalizing browser')
     driver = webdriver.Firefox(
-        executable_path=config['Paths']['gecko_driver'],
+        executable_path=os.path.dirname(os.path.dirname(__file__)) 
+          + '/' 
+          + config['Paths']['gecko_driver'],
         service_log_path=config['Paths']['gecko_log'])
 
     driver.implicitly_wait(10)

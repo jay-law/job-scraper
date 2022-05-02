@@ -1,6 +1,25 @@
 
 # Config Development Environment
 
+## Install Python
+
+Tested on Ubuntu Ubuntu 20.04.4 LTS (64-bit) and Python 3.8.10.
+
+```bash
+# Confirm Python 3 is installed
+$ python3 --version
+
+Python 3.8.10
+
+# Install venv
+$ sudo apt install python3.8-venv
+
+# Install pip
+$ sudo apt install python3-pip
+```
+
+## Clone Repo
+
 ```bash
 # Clone repo
 $ git clone git@github.com:jay-law/job-scraper.git
@@ -83,10 +102,10 @@ $ source venv/bin/activate
 
 # Install from TestPyPI
 # --extra-index-url helps with packages in prod but not test pypi
-pip install --extra-index-url https://test.pypi.org/simple/ exfill -U
+$ python3 -m pip install --extra-index-url https://test.pypi.org/simple/ exfill -U
 
 # Or install from PyPI
-pip install exfill -U
+$ python3 -m pip install --upgrade exfill
 
 # Execute as mentioned in the README
 ```

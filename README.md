@@ -40,35 +40,28 @@ Syntax should be as follows:
 
 # Usage
 
-## Configure Environment
-
-Tested on Ubuntu Ubuntu 20.04.4 LTS (64-bit) and Python 3.8.10.
-
-```bash
-# Confirm Python 3 is installed
-$ python3 --version
-
-Python 3.8.10
-
-# Install venv
-$ sudo apt install python3.8-venv
-
-# Install pip
-$ sudo apt install python3-pip
-```
-
-## Execution
-
 There are two phase.  First is scraping the postings.  Second is parsing the scraped information.  Therefore the scraping phase must occur before the parsing phase.
 
+## Use as Code
+
 ```bash
-# Scrape linkedin
+# Install with git
+$ git clone git@github.com:jay-law/job-scraper.git
+
+# Execute - Scrape linkedin
 $ python3 src/exfill/extractor.py linkedin scrape
 
-# Parse linkedin
+# Execute - Parse linkedin
 $ python3 src/exfill/extractor.py linkedin parse
+```
 
-# or execute as module
+## Use as Module
+
+```bash
+# Install
+$ python3 -m pip install --upgrade exfill
+
+# Execute - Parse linkedin
 $ python3 -m exfill.extractor linkedin parse
 ```
 
