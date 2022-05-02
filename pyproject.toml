@@ -1,5 +1,5 @@
 [project]
-name = "grabby"
+name = "exfill"
 version = "0.0.1"
 authors = [ 
     { name = "Jay Law", email = "mr-jay-law@protonmail.com" }
@@ -30,6 +30,6 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 package-dir = {"" = "src"}
 packages = [
- "grabby", 
- "grabby.parsers",
- "grabby.scrapers"]
+ "exfill", 
+ "exfill.parsers",
+ "exfill.scrapers"]

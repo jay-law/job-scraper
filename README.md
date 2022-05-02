@@ -7,9 +7,9 @@ Currently only LinkedIn is supported.
 # Project Structure
 
 Directories:
-- `src/grabby/parsers` - Contains parser(s)
-- `src/grabby/scrapers` - Contains scraper(s)
-- `src/grabby/support` 
+- `src/exfill/parsers` - Contains parser(s)
+- `src/exfill/scrapers` - Contains scraper(s)
+- `src/exfill/support` 
     - Contains `geckodriver` driver for FireFox which is used by Selenium
     - Download the latest driver from the [Mozilla GeckoDriver repo in GitHub](https://github.com/mozilla/geckodriver)
 - `venv` 
@@ -66,10 +66,10 @@ There are two phase.  First is scraping the postings.  Second is parsing the scr
 
 ```bash
 # Scrape linkedin
-$ python3 src/grabby/grabber.py linkedin scrape
+$ python3 src/exfill/extractor.py linkedin scrape
 
 # Parse linkedin
-$ python3 src/grabby/grabber.py linkedin parse
+$ python3 src/exfill/extractor.py linkedin parse
 ```
 
 ## Contributing
