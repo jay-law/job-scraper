@@ -8,141 +8,150 @@ import pandas
 
 from bs4 import BeautifulSoup
 
-def export_csv(config, all_postings, all_postings_err):
-    """Export all postings to CSV file
-    """
-    output_file = config['Parser']['linkedin_output_file']
-    output_file_errors = config['Parser']['linkedin_output_file_err']
+class Posting():
 
-    logging.info('Exporting to %s', output_file)
-    pandas.DataFrame(all_postings).to_csv(output_file, index=False)
+    def __init__(self, posting_file, config):
+        # print('creating Posting object for ' + posting_file)
+        self.posting_info = {}
+        self.error_info = {}
 
-    logging.info('Exporting errors to %s', output_file_errors)
-    pandas.DataFrame(all_postings_err).to_csv(output_file_errors, index=False)
+        self.config = config
 
-def flag_error(posting_info, error_info, err_msg):
-    """Flag posting with an error
-    """
-    error_info['error_message'] = err_msg
-    error_info['element'] = 'Element is missing'
-    error_value = 'ERROR'
-    posting_info['company_size'] = error_value
-    posting_info['company_industry'] = error_value
-    posting_info['hours'] = error_value
-    posting_info['level'] = error_value
-    posting_info['error_flg'] = 1
+        self.posting_file = posting_file
+        self.posting_info['md_file'] = posting_file
+        self.error_info['md_file'] = posting_file
 
-def parse_details(config, posting_file, posting_info, error_info):
-    """Parse out posting details contained in an HTML file
-    """
-    # Use jobid as the index for dataframe
-    jobid = posting_file.split('_')
-    jobid = jobid[1]
-    logging.info('%s - Parsing job ', jobid)
-    posting_info['jobid'] = jobid
-    error_info['jobid'] = jobid
+        self.time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.posting_info['md_datetime'] = self.time_stamp
+        self.error_info['md_datetime'] = self.time_stamp  
 
-    # Assume no errors
-    posting_info['error_flg'] = 0
+    def parse_details(self):
 
-    # Create BeautifulSoup object from html element
-    input_file_name = os.path.join(config['Parser']['linkedin_input_dir'], posting_file)
-    with open(input_file_name, mode='r', encoding='UTF-8') as file:
-        soup = BeautifulSoup(file, "html.parser")
+        # Use jobid as the index for dataframe
+        jobid = self.posting_file.split('_')
+        jobid = jobid[1]
+        logging.info('%s - Parsing job ', jobid)
+        self.posting_info['jobid'] = jobid
+        self.error_info['jobid'] = jobid
 
-    # Set job title
-    # t-24 OR t-16 should work
-    posting_info['title'] = soup.find(class_ = 't-24').text.strip()
+        # Assume no errors
+        self.posting_info['error_flg'] = 0
 
-    # Set posting url
-    posting_info['posting_url'] = 'https://www.linkedin.com/jobs/view/' + jobid
+        # Create BeautifulSoup object from html element
+        input_file_name = os.path.join(self.config['Parser']['linkedin_input_dir'], self.posting_file)
+        with open(input_file_name, mode='r', encoding='UTF-8') as file:
+            soup = BeautifulSoup(file, "html.parser")
 
-    # company info
-    temp_company_span = soup.select('span.jobs-unified-top-card__company-name')
-    temp_company_anchor = temp_company_span[0].select('a')
-    if len(temp_company_anchor) == 1:
-        posting_info['company_href'] = temp_company_anchor[0]['href']
-        posting_info['company_name'] = temp_company_anchor[0].text.strip()
-    else:
-        posting_info['company_name'] = temp_company_span[0].text.strip()
+        # Set job title
+        # t-24 OR t-16 should work
+        self.posting_info['title'] = soup.find(class_ = 't-24').text.strip()
+
+        # Set posting url
+        self.posting_info['posting_url'] = 'https://www.linkedin.com/jobs/view/' + jobid
+
+        # print(self.posting_info)
+        # company info
+        temp_company_span = soup.select('span.jobs-unified-top-card__company-name')
+        temp_company_anchor = temp_company_span[0].select('a')
+        if len(temp_company_anchor) == 1:
+            self.posting_info['company_href'] = temp_company_anchor[0]['href']
+            self.posting_info['company_name'] = temp_company_anchor[0].text.strip()
+        else:
+            self.posting_info['company_name'] = temp_company_span[0].text.strip()
 
 
-    # workplace_type. looking for remote
-    # remote (f_WT=2) in url
-    temp_workplace_type = soup.find(
-        class_ = 'jobs-unified-top-card__workplace-type').text.strip()
-    posting_info['workplace_type'] = temp_workplace_type
+        # workplace_type. looking for remote
+        # remote (f_WT=2) in url
+        temp_workplace_type = soup.find(
+            class_ = 'jobs-unified-top-card__workplace-type').text.strip()
+        self.posting_info['workplace_type'] = temp_workplace_type
+        # Grab hours, level, company_size, and company_industry
+        # syntax should be:
+        # hours · level
+        # company_size · company_industry
+        # some postings have errors in the syntax
+        temp_company_info = soup.find_all(string=re.compile(r' · '))
 
-    # Grab hours, level, company_size, and company_industry
-    # syntax should be:
-    # hours · level
-    # company_size · company_industry
-    # some postings have errors in the syntax
-    temp_company_info = soup.find_all(string=re.compile(r' · '))
-
-    # Some elements don't always load
-    if len(temp_company_info) == 0:
-        logging.error('%s - See error file for more info.', jobid)
-        err_msg = 'Company info does not exist or was not loaded'
-        flag_error(posting_info, error_info, err_msg)
-
-        return
-
-    for section in temp_company_info:
-
-        section_split = section.strip().split(' · ')
-        logging.debug('%s - %s', jobid, section)
-
-        if not len(section_split) == 2:
+        # Some elements don't always load
+        if len(temp_company_info) == 0:
             logging.error('%s - See error file for more info.', jobid)
-            err_msg = 'Posting info section doesnt have exactly ' \
-                'two elements when splitting on \' · \''
-            flag_error(posting_info, error_info, err_msg)
+            err_msg = 'Company info does not exist or was not loaded'
+            self.flag_error(err_msg)
 
-            continue
+            return
 
-        if 'employees' in section:
-            posting_info['company_size'] = section_split[0]
-            posting_info['company_industry'] = section_split[1]
+        for section in temp_company_info:
 
-        elif 'Full-time' in section:
-            posting_info['hours'] = section_split[0]
-            posting_info['level'] = section_split[1]
+            section_split = section.strip().split(' · ')
+            logging.debug('%s - %s', jobid, section)
 
-def insert_metadata(posting_file, posting_info, error_info):
-    """Insert metadata like datetime into posting info
-    """
-    posting_info['md_file'] = posting_file
-    error_info['md_file'] = posting_file
+            if not len(section_split) == 2:
+                logging.error('%s - See error file for more info.', jobid)
+                err_msg = 'Posting info section doesnt have exactly ' \
+                    'two elements when splitting on \' · \''
+                self.flag_error(err_msg)
 
+                continue
+
+            if 'employees' in section:
+                self.posting_info['company_size'] = section_split[0]
+                self.posting_info['company_industry'] = section_split[1]
+
+            elif 'Full-time' in section:
+                self.posting_info['hours'] = section_split[0]
+                self.posting_info['level'] = section_split[1]
+    
+    def flag_error(self, err_msg):
+        """Flag posting with an error
+        """
+        self.error_info['error_message'] = err_msg
+        self.error_info['element'] = 'Element is missing'
+        error_value = 'ERROR'
+        self.posting_info['company_size'] = error_value
+        self.posting_info['company_industry'] = error_value
+        self.posting_info['hours'] = error_value
+        self.posting_info['level'] = error_value
+        self.posting_info['error_flg'] = 1
+
+
+class Parser():
+    name = 'linkedin'
     time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    posting_info['md_datetime'] = time_stamp
-    error_info['md_datetime'] = time_stamp
-
-def parse_linkedin_postings(config):
-    """Main parser function that controls program flow
-    """
-    logging.info('Parsing linkedin')
-
-    logging.info('Loading config')
-    input_dir = config['Parser']['linkedin_input_dir']
 
     all_postings = []
     all_postings_err = []
 
-    for posting_file in os.listdir(input_dir):
+    def __init__(self, config):
+        self.config = config
 
-        posting_info = {}
-        error_info = {}
+        self.input_dir = config['Parser']['linkedin_input_dir']
+        self.output_file = config['Parser']['linkedin_output_file']
+        self.output_file_errors = config['Parser']['linkedin_output_file_err']
 
-        # populate above objects with posting details
-        parse_details(config, posting_file, posting_info, error_info)
+    def parse_files(self):
+        for posting_file in os.listdir(self.input_dir):
+            new_posting = Posting(posting_file, self.config)
 
-        # insert metadata into posting_info and error_info
-        insert_metadata(posting_file, posting_info, error_info)
+            new_posting.parse_details()
 
-        all_postings.append(posting_info)
-        if error_info.get('error_message'):
-            all_postings_err.append(error_info)
+            self.all_postings.append(new_posting.posting_info)
+            if new_posting.error_info.get('error_message'):
+                self.all_postings_err.append(new_posting.error_info)
+            
+    def export(self):
+      """Export all postings to CSV file
+      """
+      logging.info('Exporting to %s', self.output_file)
+      pandas.DataFrame(self.all_postings).to_csv(self.output_file, index=False)
 
-    export_csv(config, all_postings, all_postings_err)
+      logging.info('Exporting errors to %s', self.output_file_errors)
+      pandas.DataFrame(self.all_postings_err).to_csv(self.output_file_errors, index=False)
+
+def parse_linkedin_postings(config):
+    """Main parser function that controls program flow
+    """
+    linkedin_parser = Parser(config)
+
+    linkedin_parser.parse_files()
+
+    linkedin_parser.export()
