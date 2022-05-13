@@ -68,7 +68,7 @@ $ git push -u origin BRANCH_NAME
 # Install
 $ python3 -m pip install --upgrade pre-commit
 
-
+$ pre-commit install
 ```
 
 ## Black
