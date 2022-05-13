@@ -68,6 +68,9 @@ $ git push -u origin BRANCH_NAME
 # Install
 $ python3 -m pip install --upgrade pre-commit
 
+# Add .pre-commit-config.yaml file
+
+# Create hook
 $ pre-commit install
 ```
 
