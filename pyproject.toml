@@ -37,5 +37,5 @@ packages = [
 
 [tool.black]
 line-length = 79
-target-version = [‘py38’]
-include = ‘/src’
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'

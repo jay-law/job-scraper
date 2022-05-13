@@ -12,8 +12,6 @@ from parsers.linkedin_parser import parse_linkedin_postings
 from scrapers.linkedin_scraper import scrape_linkedin_postings
 
 
-
-
 def init_parser():
     """Initialize argument parser."""
     parser = argparse.ArgumentParser()
