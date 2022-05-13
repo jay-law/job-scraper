@@ -1,6 +1,6 @@
 [project]
 name = "exfill"
-version = "0.0.15"
+version = "0.0.17"
 authors = [ 
     { name = "Jay Law", email = "mr-jay-law@protonmail.com" }
 ]
@@ -36,6 +36,6 @@ packages = [
  "exfill.scrapers"]
 
 [tool.black]
+target-version = ['py38']
 line-length = 79
-target-version = ['py36', 'py37', 'py38']
 include = '\.pyi?$'
