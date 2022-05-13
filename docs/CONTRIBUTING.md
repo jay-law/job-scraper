@@ -82,6 +82,14 @@ $ pre-commit run --all-files
 
 ## Black
 
+Black has been added to three locations:
+- VSCode (see `.vscode/settings.json`)
+  - If changes are not made on save, there might be a problem with `pyproject.toml`
+- Git pre-commit hooks
+- GitHub Actions (see `.github/workflows/linters.yml`)
+
+Settings can be found in `pyproject.toml`.
+
 ```bash
 # Install
 $ python3 -m pip install --upgrade black
@@ -91,8 +99,6 @@ $ black -t py310 -l 79 --check src/
 
 # Make changes
 $ black -t py310 -l 79 src/
-
-# Add settings to pyproject.toml
 ```
 
 # Publishing
