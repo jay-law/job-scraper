@@ -75,3 +75,4 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Set/include default config.ini for users installing with PIP
 * [x] Add CICD
 * [ ] Automate versioning
+* [ ] Add formatter

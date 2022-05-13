@@ -3,9 +3,9 @@
 
 from .parser import Parser
 
+
 def parse_linkedin_postings(config):
-    """Main parser function that controls program flow
-    """
+    """Main parser function that controls program flow"""
 
     linkedin_parser = Parser(config)
 

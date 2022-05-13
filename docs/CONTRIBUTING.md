@@ -35,7 +35,7 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 
 # Install requirements
-$ python3 -m pip install -r requirements.txt
+$ pip install -r requirements.txt
 
 ########################
 # make changes to code
@@ -44,10 +44,10 @@ $ python3 -m pip install -r requirements.txt
 # Update version in pyproject.toml
 
 # Add modules as needed
-$ python3 -m pip install SOME_NEW_MODULE
+$ pip install --upgrade SOME_NEW_MODULE
 
 # Update requirements if modules were added
-$ python3 -m pip freeze > requirements.txt
+$ pip freeze > requirements.txt
 
 # Lint befor commiting
 $ pylint *
@@ -58,6 +58,35 @@ $ git commit -m 'git commit message'
 $ git push -u origin BRANCH_NAME
 
 # Create a pull request
+```
+
+# Formatting and Linting
+
+## Pre-Commit Hooks
+
+```bash
+# Install
+$ python3 -m pip install --upgrade pre-commit
+
+# Add .pre-commit-config.yaml file
+
+# Create hook
+$ pre-commit install
+```
+
+## Black
+
+```bash
+# Install
+$ python3 -m pip install --upgrade black
+
+# Check if files will be changed
+$ black -t py310 -l 79 --check src/
+
+# Make changes
+$ black -t py310 -l 79 src/
+
+# Add settings to pyproject.toml
 ```
 
 # Publishing
