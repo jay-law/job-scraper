@@ -1,5 +1,5 @@
 
-name: Publish to PyPI
+name: Publish
 
 on:
   push:
@@ -10,11 +10,11 @@ permissions:
   contents: read
 
 jobs:
-  build-and-publish:
 
+  publish:
     runs-on: ubuntu-latest
     environment: prod
-    
+    name: Publish to Prod
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install build
+        python -m pip install build
     - name: Build package
       run: python -m build
     - name: Publish to PyPI
