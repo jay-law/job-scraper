@@ -72,6 +72,12 @@ $ python3 -m pip install --upgrade pre-commit
 
 # Create hook
 $ pre-commit install
+
+# Remove hook
+$ pre-commit uninstall
+
+# Run hook without commit
+$ pre-commit run --all-files
 ```
 
 ## Black
