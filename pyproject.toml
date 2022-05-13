@@ -34,3 +34,8 @@ packages = [
  "exfill", 
  "exfill.parsers",
  "exfill.scrapers"]
+
+[tool.black]
+line-length = 79
+target-version = [‘py38’]
+include = ‘/src’
