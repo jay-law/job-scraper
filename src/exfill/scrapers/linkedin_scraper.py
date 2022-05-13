@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 
 
-def login(config, driver):
+def login(config, driver) -> None:
     """Log into LinkedIn"""
     logging.info("Reading in creds")
     with open(config["Paths"]["creds"], encoding="UTF-8") as creds:
@@ -36,7 +36,7 @@ def login(config, driver):
     submit_button.click()
 
 
-def export_html(config, soup):
+def export_html(config, soup) -> None:
     """Export single posting to html file"""
 
     output_file_prefix = os.path.join(
@@ -64,7 +64,7 @@ def export_html(config, soup):
         file.write(posting_details.prettify())
 
 
-def scrape_linkedin_postings(config, postings_to_scrape: int):
+def scrape_linkedin_postings(config, postings_to_scrape: int) -> None:
     """Main scraper function that controls program flow"""
     logging.info("Scraping linkedin")
 

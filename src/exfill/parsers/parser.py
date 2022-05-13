@@ -1,3 +1,4 @@
+from ast import List
 import datetime
 import logging
 import os
@@ -11,14 +12,14 @@ class Parser:
     def __init__(self, config):
         self.config = config
 
-        self.all_postings = []
-        self.all_postings_err = []
+        self.all_postings: list[Posting] = []
+        self.all_postings_err: list[Posting] = []
 
         self.input_dir = config["Parser"]["input_dir"]
         self.output_file = config["Parser"]["output_file"]
         self.output_file_errors = config["Parser"]["output_file_err"]
 
-    def parse_files(self):
+    def parse_files(self) -> None:
         for posting_file in os.listdir(self.input_dir):
 
             new_posting = Posting(posting_file, self.config)
@@ -29,7 +30,7 @@ class Parser:
             if new_posting.error_info.get("error_message"):
                 self.all_postings_err.append(new_posting.error_info)
 
-    def export(self):
+    def export(self) -> None:
         """Export all postings to CSV file"""
         logging.info("Exporting to %s", self.output_file)
         pandas.DataFrame(self.all_postings).to_csv(
@@ -66,32 +67,32 @@ class Posting:
         with open(self.input_file_name, mode="r", encoding="UTF-8") as file:
             self.soup = BeautifulSoup(file, "html.parser")
 
-    def parse_html(self):
-        self.get_jobid()
-        self.get_posting_url()
-        self.get_title()
-        self.get_company_info()
-        self.get_workplace_type()
-        self.get_company_details()
+    def parse_html(self) -> None:
+        self.set_jobid()
+        self.set_posting_url()
+        self.set_title()
+        self.set_company_info()
+        self.set_workplace_type()
+        self.set_company_details()
 
-    def get_jobid(self):
+    def set_jobid(self) -> None:
         # Use jobid as the index for dataframe
         jobid = self.posting_file.split("_")
         self.jobid = jobid[1]
         logging.info("%s - Parsing job ", self.jobid)
         self.posting_info["jobid"] = self.jobid
 
-    def get_posting_url(self):
+    def set_posting_url(self) -> None:
         self.posting_info["posting_url"] = (
             "https://www.linkedin.com/jobs/view/" + self.posting_info["jobid"]
         )
 
-    def get_title(self):
+    def set_title(self) -> None:
         # Set job title
         # t-24 OR t-16 should work
         self.posting_info["title"] = self.soup.find(class_="t-24").text.strip()
 
-    def get_company_info(self):
+    def set_company_info(self) -> None:
 
         # temp_anchor = self.soup.select('span.jobs-unified-top-card__company-name > a')
         # company info
@@ -106,14 +107,14 @@ class Posting:
         else:
             self.posting_info["company_name"] = span_element[0].text.strip()
 
-    def get_workplace_type(self):
+    def set_workplace_type(self) -> None:
         # workplace_type. looking for remote
         # remote (f_WT=2) in url
         self.posting_info["workplace_type"] = self.soup.find(
             class_="jobs-unified-top-card__workplace-type"
         ).text.strip()
 
-    def get_company_details(self):
+    def set_company_details(self) -> None:
 
         compnay_details_fields = [
             "company_size",
@@ -157,7 +158,7 @@ class Posting:
                 self.posting_info["hours"] = section_split[0]
                 self.posting_info["level"] = section_split[1]
 
-    def flag_error(self, err_msg, err_fields):
+    def flag_error(self, err_msg, err_fields) -> None:
 
         logging.error(
             "%s - See error file for more info.", self.posting_info["jobid"]
