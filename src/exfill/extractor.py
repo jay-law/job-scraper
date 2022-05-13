@@ -8,11 +8,11 @@ import logging
 import sys
 import os
 
-from parsers.linkedin_parser import parse_linkedin_postings
-from scrapers.linkedin_scraper import scrape_linkedin_postings
+from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
+from scrapers.linkedin_scraper import scrape_linkedin_postings  # type: ignore
 
 
-def init_parser():
+def init_parser() -> dict:
     """Initialize argument parser."""
     parser = argparse.ArgumentParser()
     parser.add_argument("site", choices=["linkedin"], help="Site to scrape")
@@ -22,7 +22,7 @@ def init_parser():
     return vars(parser.parse_args())
 
 
-def load_config():
+def load_config() -> configparser.ConfigParser:
     """Load config file"""
 
     config_file = os.path.dirname(__file__) + "/config.ini"
@@ -42,7 +42,7 @@ def load_config():
     return config
 
 
-def create_dirs(config):
+def create_dirs(config) -> None:
     """Create directories referenced in the config file"""
     # for item in config['Directories']:
     for dir_path in config.items("Directories"):
@@ -50,7 +50,7 @@ def create_dirs(config):
             os.mkdir(dir_path[1])
 
 
-def main():
+def main() -> None:
     """Main controller function used to call child functions/modules."""
     # Load config
     config = load_config()
