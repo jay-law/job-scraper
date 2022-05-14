@@ -1,12 +1,12 @@
 """Scraper module will open a FireFox browser and scrape html
 for job postings on LinkedIn.
 """
-import datetime
 import json
 import logging
 import os
 import re
-import time
+from datetime import datetime
+from time import sleep
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -36,7 +36,7 @@ def login(config, driver) -> None:
     submit_button.click()
 
 
-def export_html(config, soup) -> None:
+def export_html(config, soup):
     """Export single posting to html file"""
 
     output_file_prefix = os.path.join(
@@ -56,7 +56,7 @@ def export_html(config, soup) -> None:
     # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
     # Example:
     # jobid_2886320758_20220322_120555.html
-    time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    time_stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file = output_file_prefix + jobid + "_" + time_stamp + ".html"
 
     logging.info("Exporting jobid %s to %s", jobid, output_file)
@@ -85,7 +85,7 @@ def scrape_linkedin_postings(config, postings_to_scrape: int) -> None:
 
     while postings_scraped_total < postings_to_scrape:
         # required to prevent server timeout
-        time.sleep(2)
+        sleep(2)
         url = (
             "https://www.linkedin.com/jobs/search"
             + "?keywords=devops&location=United%20States&f_WT=2&&start="
@@ -100,7 +100,7 @@ def scrape_linkedin_postings(config, postings_to_scrape: int) -> None:
         while postings_scraped_page < 25:
 
             # required to prevent server timeout
-            time.sleep(2)
+            sleep(2)
             logging.info("START - Process new posting")
             logging.info("Updating card anchor list")
             # Create a list of each card (list of anchor tags).  Example card below
@@ -122,7 +122,7 @@ def scrape_linkedin_postings(config, postings_to_scrape: int) -> None:
             )
             logging.info("Clicking on %s", postings_scraped_total)
             card_anchor_list[postings_scraped_total].click()
-            time.sleep(2)  # hopefully helps with missing content
+            sleep(2)  # hopefully helps with missing content
 
             # Initialize beautifulsoup (used for simple exporting)
             soup = BeautifulSoup(driver.page_source, "html.parser")

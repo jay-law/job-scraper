@@ -60,9 +60,29 @@ $ git push -u origin BRANCH_NAME
 # Create a pull request
 ```
 
-# Formatting and Linting
+# Linting and Formatting Enforcement
 
-## Pre-Commit Hooks
+Linters and formatters are "enforced" with pre-commit hooks and GitHub Actions.  Each tool (black, isort, etc.) can be triggered in the following situations:
+- Automatically in VSCode
+  - See `.vscode/settings.json` for settings.  Plugins might be required
+- Manually at the tool level
+  - See the 'Usage' section for each tool below
+- Manually with pre-commit hooks
+  - Run `pre-commit run --all-files` from the CLI
+- Automatically with pre-commit hooks
+  - See `.pre-commit-config.yaml` 
+- Automatically in GitHub Actions
+  - See `.github/workflows/`
+
+## VSCode Settings
+
+todo
+
+## pre-commit
+
+`pre-commit` is used to trigger linting and formatting during a git commit call.  Hooks are defined in `.pre-commit-config.yaml`.
+
+### Usage
 
 ```bash
 # Install
@@ -80,52 +100,76 @@ $ pre-commit uninstall
 $ pre-commit run --all-files
 ```
 
-## Black
+## GitHub Actions
 
-Settings can be found in `pyproject.toml`.
+todo
 
-Black has been added to three locations:
-- VSCode (see `.vscode/settings.json`)
-  - If changes are not made on save, there might be a problem with `pyproject.toml`
-- Git pre-commit hooks
-- GitHub Actions (see `.github/workflows/linters.yml`)
+# Tools
+
+## black
+
+`black` is used to format code.
+
+* [x] VSCode (`.vscode/settings.json`)
+* [x] Git pre-commit hook
+* [x] GitHub Actions (`.github/workflows/linters.yml`)
+
+Settings - `pyproject.toml`
+
+If changes are not made on save, there might be a problem with `pyproject.toml`.
+
+### Usage
 
 ```bash
 # Install
 $ python3 -m pip install --upgrade black
 
-# Check if files will be changed
-$ black -t py310 -l 79 --check src/
+# Run manually - Check if files will be changed
+$ black --check src/
 
-# Make changes
-$ black -t py310 -l 79 src/
+# Run manually - Make changes
+$ black src/
 ```
 
 ## isort
+
+`isort` is used to order import statements.
+
+* [ ] VSCode (`.vscode/settings.json`)
+* [x] Git pre-commit hook
+* [x] GitHub Actions (`.github/workflows/linters.yml`)
+
+### Usage
 
 ```bash
 # Install
 $ python3 -m pip install --upgrade isort
 
-# Run - settings are picked up from pyproject.toml
-$ isort .
-
-# See difference but don't make change
+# Run manually - See difference but don't make change
 $ isort --check --diff .
-# --check - throws error when issue is found
-# --diff - outputs suggested changes
+
+# Run manually - settings are picked up from pyproject.toml
+$ isort .
 ```
 
-## Mypy
+## mypy
+
+`mypy` is used for static type checking.
 
 Settings can be found in `pyproject.toml` ([toml example](https://mypy.readthedocs.io/en/stable/config_file.html#example-pyproject-toml)).
 
+* [ ] VSCode (`.vscode/settings.json`)
+* [x] Git pre-commit hook
+* [ ] GitHub Actions (`.github/workflows/linters.yml`)
+
+### Usage
+
 ```bash
 # Install
-$ python3 -m pip install --upgrade Mypy
+$ python3 -m pip install --upgrade mypy
 
-# Run
-$ mypy src/
+# Run manually
+$ mypy
 ```
 
 # Publishing
