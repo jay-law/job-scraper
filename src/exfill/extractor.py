@@ -2,11 +2,11 @@
 each posting, then combine all of the information into a single useable
 csv file.
 """
-import argparse
-import configparser
 import logging
 import os
 import sys
+from argparse import ArgumentParser
+from configparser import ConfigParser, ExtendedInterpolation
 
 from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
 from scrapers.linkedin_scraper import scrape_linkedin_postings  # type: ignore
@@ -14,7 +14,7 @@ from scrapers.linkedin_scraper import scrape_linkedin_postings  # type: ignore
 
 def init_parser() -> dict:
     """Initialize argument parser."""
-    parser = argparse.ArgumentParser()
+    parser = ArgumentParser()
     parser.add_argument("site", choices=["linkedin"], help="Site to scrape")
     parser.add_argument(
         "action", choices=["scrape", "parse"], help="Action to perform"
@@ -22,7 +22,7 @@ def init_parser() -> dict:
     return vars(parser.parse_args())
 
 
-def load_config() -> configparser.ConfigParser:
+def load_config() -> ConfigParser:
     """Load config file"""
 
     config_file = os.path.dirname(__file__) + "/config.ini"
@@ -34,15 +34,13 @@ def load_config() -> configparser.ConfigParser:
         )
         sys.exit()
 
-    config = configparser.ConfigParser(
-        interpolation=configparser.ExtendedInterpolation()
-    )
+    config = ConfigParser(interpolation=ExtendedInterpolation())
     config.read(config_file)
 
     return config
 
 
-def create_dirs(config: configparser.ConfigParser) -> None:
+def create_dirs(config: ConfigParser) -> None:
     """Create directories referenced in the config file"""
     # for item in config['Directories']:
     for dir_path in config.items("Directories"):

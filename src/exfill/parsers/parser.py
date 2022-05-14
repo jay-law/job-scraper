@@ -1,11 +1,10 @@
-import datetime
 import logging
 import os
 import re
-from ast import List
+from datetime import datetime
 
-import pandas
 from bs4 import BeautifulSoup
+from pandas import DataFrame
 
 
 class Parser:
@@ -33,12 +32,10 @@ class Parser:
     def export(self) -> None:
         """Export all postings to CSV file"""
         logging.info("Exporting to %s", self.output_file)
-        pandas.DataFrame(self.all_postings).to_csv(
-            self.output_file, index=False
-        )
+        DataFrame(self.all_postings).to_csv(self.output_file, index=False)
 
         logging.info("Exporting errors to %s", self.output_file_errors)
-        pandas.DataFrame(self.all_postings_err).to_csv(
+        DataFrame(self.all_postings_err).to_csv(
             self.output_file_errors, index=False
         )
 
@@ -54,7 +51,7 @@ class Posting:
         self.posting_file = posting_file
         self.posting_info["md_file"] = posting_file
 
-        self.time_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.time_stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.posting_info["md_datetime"] = self.time_stamp
 
         # Assume no errors
