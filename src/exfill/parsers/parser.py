@@ -1,10 +1,10 @@
-from ast import List
 import datetime
 import logging
 import os
 import re
-import pandas
+from ast import List
 
+import pandas
 from bs4 import BeautifulSoup
 
 

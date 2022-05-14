@@ -77,3 +77,4 @@ $ python3 -m exfill.extractor linkedin parse
 * [ ] Automate versioning
 * [x] Add formatter (black module)
 * [x] Add static type checking (mypy module)
+* [ ] Add import sorter (isort module)
