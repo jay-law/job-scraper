@@ -1,5 +1,4 @@
-
-name: PublishMe
+name: Publish
 
 on:
   workflow_run:
