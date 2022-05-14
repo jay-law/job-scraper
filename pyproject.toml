@@ -1,6 +1,6 @@
 [project]
 name = "exfill"
-version = "0.1.1"
+dynamic = ['version']
 authors = [ 
     { name = "Jay Law", email = "mr-jay-law@protonmail.com" }
 ]
@@ -34,6 +34,13 @@ packages = [
  "exfill", 
  "exfill.parsers",
  "exfill.scrapers"]
+
+[tool.setuptools.dynamic]
+version = {attr = "exfill.__version__"}
+
+#[tool.setuptools_scm]
+#write_to = "src/exfill/__version__.py"
+# git_describe_command = "git describe --tags"
 
 [tool.black]
 target-version = ['py38']
