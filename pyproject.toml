@@ -44,6 +44,7 @@ include = '\.pyi?$'
 src_paths = ["src"]
 py_version = 38
 
+
 [tool.mypy]
 python_version = "3.8"
 files = ['src/']
