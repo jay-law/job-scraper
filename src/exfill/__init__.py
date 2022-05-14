@@ -5,4 +5,8 @@ import sys
 
 sys.path.append(os.path.dirname(__file__))
 
-__version__ = "1.1.2"
+from setuptools_scm import get_version
+
+__version__ = get_version()
+
+# __version__ = "1.1.2"

@@ -38,9 +38,9 @@ packages = [
 [tool.setuptools.dynamic]
 version = {attr = "exfill.__version__"}
 
-[tool.setuptools_scm]
-write_to = "src/exfill/__version__.py"
-git_describe_command = "git describe --tags"
+#[tool.setuptools_scm]
+#write_to = "src/exfill/__version__.py"
+# git_describe_command = "git describe --tags"
 
 [tool.black]
 target-version = ['py38']
