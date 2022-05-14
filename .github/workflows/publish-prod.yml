@@ -2,9 +2,11 @@
 name: Publish
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows:
+      - Linters
+    types:
+      - completed
 
 permissions:
   contents: read
