@@ -6,8 +6,6 @@ on:
       - Linters
     types:
       - completed
-    branches:
-      - main
 
 permissions:
   contents: read
