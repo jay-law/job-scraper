@@ -5,8 +5,8 @@ csv file.
 import argparse
 import configparser
 import logging
-import sys
 import os
+import sys
 
 from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
 from scrapers.linkedin_scraper import scrape_linkedin_postings  # type: ignore
