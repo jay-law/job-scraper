@@ -42,7 +42,7 @@ def load_config() -> configparser.ConfigParser:
     return config
 
 
-def create_dirs(config) -> None:
+def create_dirs(config: configparser.ConfigParser) -> None:
     """Create directories referenced in the config file"""
     # for item in config['Directories']:
     for dir_path in config.items("Directories"):
