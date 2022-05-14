@@ -17,7 +17,12 @@ jobs:
     environment: prod
     name: Publish to Prod
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Print tags
+      run: |
+        git describe
+        git tag
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
