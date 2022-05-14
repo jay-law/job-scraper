@@ -9,10 +9,6 @@ on:
       - completed
     branches:
       - main
-  pull_request:
-    types: [opened, reopened]
-    branches:
-      - main
 
 permissions:
   contents: read
