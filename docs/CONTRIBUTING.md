@@ -80,6 +80,7 @@ todo
 
 ## pre-commit
 
+
 `pre-commit` is used to trigger linting and formatting during a git commit call.  Hooks are defined in `.pre-commit-config.yaml`.
 
 ### Usage
