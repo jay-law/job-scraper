@@ -7,4 +7,3 @@ repos:
     rev: 5.10.1
     hooks:
     - id: isort
-      additional_dependencies: ["toml"]

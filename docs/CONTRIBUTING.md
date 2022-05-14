@@ -107,11 +107,11 @@ $ black -t py310 -l 79 src/
 # Install
 $ python3 -m pip install --upgrade isort
 
-# Run
-$ isort src
+# Run - settings are picked up from pyproject.toml
+$ isort .
 
 # See difference but don't make change
-$ isort --check --diff src
+$ isort --check --diff .
 # --check - throws error when issue is found
 # --diff - outputs suggested changes
 ```
