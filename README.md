@@ -78,4 +78,3 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Add formatter (black module)
 * [x] Add static type checking (mypy module)
 * [x] Add import sorter (isort module)
-
