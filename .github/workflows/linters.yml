@@ -1,11 +1,13 @@
 name: Linters
 
 on:
+  push:
+    branches: 
+      - "**"
   pull_request:
     types: [opened, reopened]
     branches:
       - main
-  - push
 
 jobs:
 
