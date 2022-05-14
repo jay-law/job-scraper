@@ -7,4 +7,5 @@ from setuptools_scm import get_version
 
 sys.path.append(os.path.dirname(__file__))
 
-__version__ = get_version()
+version = get_version()
+__version__ = ".".join(version.split(".")[:3])

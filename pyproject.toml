@@ -23,7 +23,7 @@ cli-script = "exfill.extractor:main"
 
 [build-system]
 requires = [
-    "setuptools>=45", 
+    "setuptools>=42", 
     "setuptools_scm[toml]>=6.2"
 ]
 build-backend = "setuptools.build_meta"
@@ -38,9 +38,9 @@ packages = [
 [tool.setuptools.dynamic]
 version = {attr = "exfill.__version__"}
 
-#[tool.setuptools_scm]
-#write_to = "src/exfill/__version__.py"
-# git_describe_command = "git describe --tags"
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+
 
 [tool.black]
 target-version = ['py38']
