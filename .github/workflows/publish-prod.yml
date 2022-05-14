@@ -1,5 +1,5 @@
 
-name: Publish
+name: PublishMe
 
 on:
   workflow_run:
@@ -7,6 +7,8 @@ on:
       - Linters
     types:
       - completed
+    branches:
+      - main
 
 permissions:
   contents: read

@@ -40,9 +40,13 @@ target-version = ['py38']
 line-length = 79
 include = '\.pyi?$'
 
+[tool.isort]
+src_paths = ["src"]
+py_version = 38
+
 [tool.mypy]
 python_version = "3.8"
-files = ["src/"]
+files = ['src/']
 
 [[tool.mypy.overrides]]
 module = [

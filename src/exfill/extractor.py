@@ -5,8 +5,8 @@ csv file.
 import argparse
 import configparser
 import logging
-import sys
 import os
+import sys
 
 from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
 from scrapers.linkedin_scraper import scrape_linkedin_postings  # type: ignore
@@ -42,7 +42,7 @@ def load_config() -> configparser.ConfigParser:
     return config
 
 
-def create_dirs(config) -> None:
+def create_dirs(config: configparser.ConfigParser) -> None:
     """Create directories referenced in the config file"""
     # for item in config['Directories']:
     for dir_path in config.items("Directories"):

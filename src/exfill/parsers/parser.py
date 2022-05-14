@@ -1,10 +1,10 @@
-from ast import List
 import datetime
 import logging
 import os
 import re
-import pandas
+from ast import List
 
+import pandas
 from bs4 import BeautifulSoup
 
 
@@ -158,7 +158,7 @@ class Posting:
                 self.posting_info["hours"] = section_split[0]
                 self.posting_info["level"] = section_split[1]
 
-    def flag_error(self, err_msg, err_fields) -> None:
+    def flag_error(self, err_msg: str, err_fields: list) -> None:
 
         logging.error(
             "%s - See error file for more info.", self.posting_info["jobid"]

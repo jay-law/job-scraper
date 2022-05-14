@@ -101,6 +101,21 @@ $ black -t py310 -l 79 --check src/
 $ black -t py310 -l 79 src/
 ```
 
+## isort
+
+```bash
+# Install
+$ python3 -m pip install --upgrade isort
+
+# Run - settings are picked up from pyproject.toml
+$ isort .
+
+# See difference but don't make change
+$ isort --check --diff .
+# --check - throws error when issue is found
+# --diff - outputs suggested changes
+```
+
 ## Mypy
 
 Settings can be found in `pyproject.toml` ([toml example](https://mypy.readthedocs.io/en/stable/config_file.html#example-pyproject-toml)).
