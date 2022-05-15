@@ -41,7 +41,6 @@ version = {attr = "exfill.__version__"}
 #[tool.setuptools_scm]
 #version_scheme = "no-guess-dev"
 
-
 [tool.black]
 target-version = ['py38']
 line-length = 79
