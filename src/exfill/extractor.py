@@ -65,7 +65,7 @@ def main() -> None:
     )
 
     args = init_parser()
-    logging.info("Starting app with the following input args: %s", args)
+    logging.info(f"Starting app with the following input args: {args}")
 
     if args["site"] == "linkedin":
         if args["action"] == "scrape":
