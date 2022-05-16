@@ -140,6 +140,8 @@ $ black src/
 * [x] Git pre-commit hook
 * [x] GitHub Actions (`.github/workflows/linters.yml`)
 
+Settings - `pyproject.toml`
+
 ### Usage
 
 ```bash
@@ -153,15 +155,35 @@ $ isort --check --diff .
 $ isort .
 ```
 
+## flake8
+
+`flake8` is used to lint code
+
+* [x] VSCode (`.vscode/settings.json`)
+* [x] Git pre-commit hook
+* [x] GitHub Actions (`.github/workflows/linters.yml`)
+
+Settings - None. Just using default config.
+
+### Usage
+
+```bash
+# Install
+$ python3 -m pip install --upgrade flake8
+
+# Run manually
+$ flake8 src/
+```
+
 ## mypy
 
 `mypy` is used for static type checking.
 
-Settings can be found in `pyproject.toml` ([toml example](https://mypy.readthedocs.io/en/stable/config_file.html#example-pyproject-toml)).
-
 * [ ] VSCode (`.vscode/settings.json`)
 * [x] Git pre-commit hook
 * [ ] GitHub Actions (`.github/workflows/linters.yml`)
+
+[Settings](https://mypy.readthedocs.io/en/stable/config_file.html#example-pyproject-toml) - `pyproject.toml`
 
 ### Usage
 

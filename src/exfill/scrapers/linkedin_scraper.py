@@ -103,14 +103,15 @@ def scrape_linkedin_postings(config, postings_to_scrape: int) -> None:
             sleep(2)
             logging.info("START - Process new posting")
             logging.info("Updating card anchor list")
-            # Create a list of each card (list of anchor tags).  Example card below
+            # Create a list of each card (list of anchor tags).
+            # Example card below:
             # <a href="/jobs/view/..." id="ember310" class="disabled ember-view
             # job-card-container__link job-card-list__title"> blah </a>
             card_anchor_list = driver.find_elements_by_class_name(
                 "job-card-list__title"
             )
-            # About 7 are loaded initially.  More are loaded dynamically as the user
-            # scrolls down
+            # About 7 are loaded initially.  More are loaded
+            # dynamically as the user scrolls down
             card_anchor_list_count = len(card_anchor_list)
             logging.info("Anchor list count - %s", card_anchor_list_count)
 
