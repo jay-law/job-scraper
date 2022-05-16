@@ -17,7 +17,7 @@ def login(config, driver) -> None:
     logging.info("Reading in creds")
     with open(config["Paths"]["creds"], encoding="UTF-8") as creds:
         cred_dict = json.load(creds)["linkedin"]
-    logging.info("User name - %s", cred_dict["username"])
+    logging.info(f"User name - {cred_dict['username']}")
 
     logging.info("Navigating to login page")
     url = "https://www.linkedin.com/login"
@@ -59,7 +59,7 @@ def export_html(config, soup):
     time_stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file = output_file_prefix + jobid + "_" + time_stamp + ".html"
 
-    logging.info("Exporting jobid %s to %s", jobid, output_file)
+    logging.info(f"Exporting jobid {jobid} to {output_file}")
     with open(output_file, "w+", encoding="UTF-8") as file:
         file.write(posting_details.prettify())
 
@@ -91,7 +91,7 @@ def scrape_linkedin_postings(config, postings_to_scrape: int) -> None:
             + "?keywords=devops&location=United%20States&f_WT=2&&start="
             + str(postings_scraped_total)
         )
-        logging.info("Loading url: %s", url)
+        logging.info(f"Loading url: {url}")
         driver.get(url)
 
         # There are 25 postings per page.  Postings are loaded dynamically
@@ -113,15 +113,15 @@ def scrape_linkedin_postings(config, postings_to_scrape: int) -> None:
             # About 7 are loaded initially.  More are loaded
             # dynamically as the user scrolls down
             card_anchor_list_count = len(card_anchor_list)
-            logging.info("Anchor list count - %s", card_anchor_list_count)
+            logging.info(f"Anchor list count - {card_anchor_list_count}")
 
             # Scroll to the next element using javascript
-            logging.info("Scrolling to - %s", postings_scraped_total)
+            logging.info(f"Scrolling to - {postings_scraped_total}")
             driver.execute_script(
                 "arguments[0].scrollIntoView(true);",
                 card_anchor_list[postings_scraped_total],
             )
-            logging.info("Clicking on %s", postings_scraped_total)
+            logging.info(f"Clicking on {postings_scraped_total}")
             card_anchor_list[postings_scraped_total].click()
             sleep(2)  # hopefully helps with missing content
 
