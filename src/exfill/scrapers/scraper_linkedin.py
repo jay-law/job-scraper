@@ -3,6 +3,7 @@ import logging
 import os
 import re
 from datetime import datetime
+from math import ceil
 from time import sleep
 
 from bs4 import BeautifulSoup
@@ -14,12 +15,16 @@ class LinkedInScraper(Scraper):
     def __init__(self, config):
         self.config = config
 
-    def scrape_postings(self):
-        print("scraping")
+    def scrape_postings(self, postings_to_scrape: int):
         self.driver = self.browser_init()
         self.browser_login()
-        self.load_search_page(0)
-        self.scrape_page()
+
+        for page in range(ceil(postings_to_scrape / 25)):
+            self.load_search_page(page)
+            self.scrape_page()
+
+        logging.info("Closing browser")
+        self.driver.close()
 
     def export(self):
         print("exporting")
@@ -52,11 +57,9 @@ class LinkedInScraper(Scraper):
         self.driver.find_element_by_id("username").send_keys(
             cred_dict["username"]
         )
-
         self.driver.find_element_by_id("password").send_keys(
             cred_dict["password"]
         )
-
         self.driver.find_element_by_xpath(
             "//button[@aria-label='Sign in']"
         ).click()
@@ -102,20 +105,20 @@ class LinkedInScraper(Scraper):
         with open(output_file, "w+", encoding="UTF-8") as file:
             file.write(posting_details.prettify())
 
-    def scrape_page(self) -> None:
-        sleep(2)
-        logging.info("Updating card anchor list")
+    def update_anchor_list(self):
         # Create a list of each card (list of anchor tags).
         # Example card below:
         # <a href="/jobs/view/..." id="ember310" class="disabled ember-view
         # job-card-container__link job-card-list__title"> blah </a>
-        card_anchor_list = self.driver.find_elements_by_class_name(
-            "job-card-list__title"
-        )
-        i = 0
-        while i < 25:
+        logging.info("Updating card anchor list")
+        return self.driver.find_elements_by_class_name("job-card-list__title")
+
+    def scrape_page(self) -> None:
+        sleep(2)
+        card_anchor_list = self.update_anchor_list()
+
+        for i in range(25):
             logging.info(f"Scrolling to - {i}")
-            print(f"Scrolling to - {i}")
             self.driver.execute_script(
                 "arguments[0].scrollIntoView(true);",
                 card_anchor_list[i],
@@ -126,10 +129,6 @@ class LinkedInScraper(Scraper):
 
             # About 7 are loaded initially.  More are loaded
             # dynamically as the user scrolls down
-            card_anchor_list = self.driver.find_elements_by_class_name(
-                "job-card-list__title"
-            )
+            card_anchor_list = self.update_anchor_list()
 
             self.export_html(self.driver.page_source)
-
-            i += 1

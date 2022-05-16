@@ -67,13 +67,9 @@ def main() -> None:
 
     if args["site"] == "linkedin":
         if args["action"] == "scrape":
-
             scraper = Factory.create("linkedin", config)
-            scraper.scrape_postings()
+            scraper.scrape_postings(48)
 
-            # postings_to_scrape will round up by 25 as 25
-            # postings are loaded per page
-            # scrape_linkedin_postings(config, postings_to_scrape=5)
         if args["action"] == "parse":
             parse_linkedin_postings(config)
 
