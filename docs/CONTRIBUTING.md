@@ -153,6 +153,22 @@ $ isort --check --diff .
 $ isort .
 ```
 
+## flake8
+
+* [ ] VSCode (`.vscode/settings.json`)
+* [x] Git pre-commit hook
+* [ ] GitHub Actions (`.github/workflows/linters.yml`)
+
+### Usage
+
+```bash
+# Install
+$ python3 -m pip install --upgrade flake8
+
+# Run manually
+$ flake8 src/
+```
+
 ## mypy
 
 `mypy` is used for static type checking.

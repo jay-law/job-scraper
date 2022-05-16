@@ -91,7 +91,8 @@ class Posting:
 
     def set_company_info(self) -> None:
 
-        # temp_anchor = self.soup.select('span.jobs-unified-top-card__company-name > a')
+        # temp_anchor = self.soup.select
+        # ('span.jobs-unified-top-card__company-name > a')
         # company info
         span_element = self.soup.select(
             "span.jobs-unified-top-card__company-name"
