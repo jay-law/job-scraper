@@ -19,8 +19,8 @@ jobs:
         with:
           python-version: 3.8
       - name: Run flake8
-      - run: |
-        flake8 src
+        run: |
+          flake8 src
 
   isort:
     runs-on: ubuntu-latest
