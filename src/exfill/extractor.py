@@ -4,12 +4,15 @@ csv file.
 """
 import logging
 import os
-import sys
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 
 from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
 from scrapers.linkedin_scraper import scrape_linkedin_postings  # type: ignore
+
+
+class ConfigFileMissing(Exception):
+    pass
 
 
 def init_parser() -> dict:
@@ -27,12 +30,7 @@ def load_config() -> ConfigParser:
 
     config_file = os.path.dirname(__file__) + "/config.ini"
     if not os.path.exists(config_file):
-        print(
-            "Exiting app as the following config file does not exist: ",
-            config_file,
-            file=sys.stderr,
-        )
-        sys.exit()
+        raise ConfigFileMissing("Default config.ini is missing")
 
     config = ConfigParser(interpolation=ExtendedInterpolation())
     config.read(config_file)
@@ -76,7 +74,6 @@ def main() -> None:
             parse_linkedin_postings(config)
 
     logging.info("Finished execution.  Exiting application.")
-    sys.exit()
 
 
 if __name__ == "__main__":
