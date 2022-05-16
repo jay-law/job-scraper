@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 
 from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
-from scrapers.linkedin_scraper import scrape_linkedin_postings  # type: ignore
+from scrapers.factory import ScraperFactory
 
 
 class ConfigFileMissing(Exception):
@@ -67,9 +67,9 @@ def main() -> None:
 
     if args["site"] == "linkedin":
         if args["action"] == "scrape":
-            # postings_to_scrape will round up by 25 as 25
-            # postings are loaded per page
-            scrape_linkedin_postings(config, postings_to_scrape=5)
+            scraper = ScraperFactory.create("linkedin", config)
+            scraper.scrape_postings(48)
+
         if args["action"] == "parse":
             parse_linkedin_postings(config)
 
