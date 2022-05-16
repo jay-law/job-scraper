@@ -1,7 +1,7 @@
-from scrapers.scraper_linkedin import LinkedInScraper
+from scrapers.linkedin_scraper import LinkedInScraper
 
 
-class Factory:
+class ScraperFactory:
     @staticmethod
     def create(scraper_type: str, config):
         if scraper_type == "linkedin":
