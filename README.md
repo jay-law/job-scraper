@@ -61,6 +61,9 @@ $ python3 src/exfill/extractor.py linkedin parse
 # Install
 $ python3 -m pip install --upgrade exfill
 
+# Execute - Scrape linkedin
+$ python3 -m exfill.extractor linkedin scrape
+
 # Execute - Parse linkedin
 $ python3 -m exfill.extractor linkedin parse
 ```
