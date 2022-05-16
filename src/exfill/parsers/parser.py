@@ -7,6 +7,10 @@ from bs4 import BeautifulSoup
 from pandas import DataFrame
 
 
+class NoImportFiles(Exception):
+    pass
+
+
 class Parser:
     def __init__(self, config):
         self.config = config
@@ -19,6 +23,9 @@ class Parser:
         self.output_file_errors = config["Parser"]["output_file_err"]
 
     def parse_files(self) -> None:
+        if len(os.listdir(self.input_dir)) == 0:
+            raise NoImportFiles("There are no files to import")
+
         for posting_file in os.listdir(self.input_dir):
 
             new_posting = Posting(posting_file, self.config)
