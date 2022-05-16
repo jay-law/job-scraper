@@ -79,4 +79,5 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Add static type checking (mypy module)
 * [x] Add import sorter (isort module)
 * [x] Add linter (flake8 module)
-* [ ] Update string interpolation from %f to f-string
+* [x] Update string interpolation from %f to f-string
+* [x] Replace sys.exit calls with exceptions
