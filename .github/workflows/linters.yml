@@ -1,9 +1,9 @@
 name: Linters
 
 on:
-  # push:
-  #   branches: 
-  #     - "**"
+  push:
+    branches: 
+      - "**"
   pull_request:
     types: [opened, reopened]
     branches:
@@ -11,11 +11,21 @@ on:
 
 jobs:
 
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+      - run: |
+        flake8 src/
+
   isort:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - uses: isort/isort-action@master
@@ -25,5 +35,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          python-version: 3.8
       - name: black
         uses: psf/black@stable
