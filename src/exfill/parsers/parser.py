@@ -31,10 +31,10 @@ class Parser:
 
     def export(self) -> None:
         """Export all postings to CSV file"""
-        logging.info("Exporting to %s", self.output_file)
+        logging.info(f"Exporting to {self.output_file}")
         DataFrame(self.all_postings).to_csv(self.output_file, index=False)
 
-        logging.info("Exporting errors to %s", self.output_file_errors)
+        logging.info(f"Exporting errors to {self.output_file_errors}")
         DataFrame(self.all_postings_err).to_csv(
             self.output_file_errors, index=False
         )
@@ -76,7 +76,7 @@ class Posting:
         # Use jobid as the index for dataframe
         jobid = self.posting_file.split("_")
         self.jobid = jobid[1]
-        logging.info("%s - Parsing job ", self.jobid)
+        logging.info(f"{self.jobid} - Parsing job ")
         self.posting_info["jobid"] = self.jobid
 
     def set_posting_url(self) -> None:
@@ -137,7 +137,7 @@ class Posting:
 
         for section in company_details:
 
-            logging.debug("%s - %s", self.posting_info["jobid"], section)
+            logging.debug(f"{self.posting_info['jobid']} - {section}")
             section_split = section.strip().split(" · ")
 
             if not len(section_split) == 2:
@@ -159,7 +159,7 @@ class Posting:
     def flag_error(self, err_msg: str, err_fields: list) -> None:
 
         logging.error(
-            "%s - See error file for more info.", self.posting_info["jobid"]
+            f"{self.posting_info['jobid']} - See error file for more info."
         )
         self.error_info["jobid"] = self.jobid
         self.error_info["md_datetime"] = self.time_stamp
