@@ -1,5 +1,5 @@
-from parsers.factory import NoMatchingParserType, ParserFactory
 from parsers.linkedin_parser import LinkedinParser
+from parsers.parser_factory import NoMatchingParserType, ParserFactory
 from tests.main_test import TestExtractor
 
 
