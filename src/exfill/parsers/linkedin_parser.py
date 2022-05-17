@@ -2,8 +2,7 @@
 """
 import logging
 import os
-
-# import re
+import re
 from datetime import datetime
 
 from bs4 import BeautifulSoup
@@ -67,7 +66,7 @@ class Posting:
         self.set_title()
         self.set_company_info()
         self.set_workplace_type()
-        # self.set_company_details()
+        self.set_company_details()
 
     def set_jobid(self) -> None:
         # Use jobid as the index for dataframe
@@ -107,6 +106,50 @@ class Posting:
         self.posting_info["workplace_type"] = self.soup.find(
             class_="jobs-unified-top-card__workplace-type"
         ).text.strip()
+
+    def set_company_details(self) -> None:
+
+        compnay_details_fields = [
+            "company_size",
+            "company_industry",
+            "hours",
+            "level",
+        ]
+
+        # Grab hours, level, company_size, and company_industry
+        # syntax should be:
+        # hours · level
+        # company_size · company_industry
+        # some postings have errors in the syntax
+        company_details = self.soup.find_all(string=re.compile(r" · "))
+
+        # Some elements don't always load
+        if len(company_details) == 0:
+            err_msg = "Company details do not exist or were not loaded"
+            self.flag_error(err_msg, compnay_details_fields)
+
+            return
+
+        for section in company_details:
+
+            logging.debug(f"{self.posting_info['jobid']} - {section}")
+            section_split = section.strip().split(" · ")
+
+            if not len(section_split) == 2:
+                err_msg = (
+                    "Company details section does not have exactly "
+                    "two elements when splitting on ' · '"
+                )
+                self.flag_error(err_msg, compnay_details_fields)
+                continue
+
+            if "employees" in section:
+                self.posting_info["company_size"] = section_split[0]
+                self.posting_info["company_industry"] = section_split[1]
+
+            elif "Full-time" in section:
+                self.posting_info["hours"] = section_split[0]
+                self.posting_info["level"] = section_split[1]
 
     def flag_error(self, err_msg: str, err_fields: list) -> None:
 
