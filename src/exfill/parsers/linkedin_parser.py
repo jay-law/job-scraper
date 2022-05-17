@@ -6,8 +6,7 @@ import re
 from datetime import datetime
 
 from bs4 import BeautifulSoup
-
-# from pandas import DataFrame
+from pandas import DataFrame
 from parsers.parser_base import Parser
 
 # from .parser import Parser
@@ -36,6 +35,16 @@ class LinkedinParser(Parser):
             posting = Posting(input_file, self.config)
 
             posting.parse_html()
+
+    def export(self) -> None:
+        """Export all postings to CSV file"""
+        logging.info(f"Exporting to {self.output_file}")
+        DataFrame(self.all_postings).to_csv(self.output_file, index=False)
+
+        logging.info(f"Exporting errors to {self.output_file_errors}")
+        DataFrame(self.all_postings_err).to_csv(
+            self.output_file_errors, index=False
+        )
 
 
 class Posting:
