@@ -65,7 +65,7 @@ class Posting:
         self.set_jobid()
         self.set_posting_url()
         self.set_title()
-        # self.set_company_info()
+        self.set_company_info()
         # self.set_workplace_type()
         # self.set_company_details()
 
@@ -85,6 +85,21 @@ class Posting:
         # Set job title
         # t-24 OR t-16 should work
         self.posting_info["title"] = self.soup.find(class_="t-24").text.strip()
+
+    def set_company_info(self) -> None:
+        # temp_anchor = self.soup.select
+        # ('span.jobs-unified-top-card__company-name > a')
+        # company info
+        span_element = self.soup.select(
+            "span.jobs-unified-top-card__company-name"
+        )
+        anchor_element = span_element[0].select("a")
+
+        if len(anchor_element) == 1:
+            self.posting_info["company_href"] = anchor_element[0]["href"]
+            self.posting_info["company_name"] = anchor_element[0].text.strip()
+        else:
+            self.posting_info["company_name"] = span_element[0].text.strip()
 
 
 def parse_linkedin_postings(config):
