@@ -7,6 +7,7 @@ import os
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 
+# from parsers.factory import ParserFactory
 from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
 from scrapers.factory import ScraperFactory
 
