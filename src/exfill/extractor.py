@@ -65,14 +65,13 @@ def main() -> None:
     args = init_parser()
     logging.info(f"Starting app with the following input args: {args}")
 
-    if args["site"] == "linkedin":
-        if args["action"] == "scrape":
-            scraper = ScraperFactory.create("linkedin", config)
-            scraper.scrape_postings(48)
+    if args["action"] == "scrape":
+        scraper = ScraperFactory.create("linkedin", config)
+        scraper.scrape_postings(48)
 
-        if args["action"] == "parse":
-            parser = ParserFactory.create("linkedin", config)
-            parser.parse_postings()
+    if args["action"] == "parse":
+        parser = ParserFactory.create("linkedin", config)
+        parser.parse_postings()
 
     logging.info("Finished execution.  Exiting application.")
 
