@@ -108,6 +108,23 @@ class Posting:
             class_="jobs-unified-top-card__workplace-type"
         ).text.strip()
 
+    def flag_error(self, err_msg: str, err_fields: list) -> None:
+
+        logging.error(
+            f"{self.posting_info['jobid']} - See error file for more info."
+        )
+        self.error_info["jobid"] = self.jobid
+        self.error_info["md_datetime"] = self.time_stamp
+        self.error_info["md_file"] = self.posting_file
+
+        self.error_info["error_message"] = err_msg
+        self.posting_info["error_flg"] = 1
+        error_value = "ERROR"
+
+        self.error_info["field"] = err_fields
+        for field in err_fields:
+            self.posting_info[field] = error_value
+
 
 def parse_linkedin_postings(config):
     """Main parser function that controls program flow"""
