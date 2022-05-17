@@ -41,16 +41,8 @@ $ pip install -r requirements.txt
 # make changes to code
 ########################
 
-# Update version in pyproject.toml
-
-# Add modules as needed
-$ pip install --upgrade SOME_NEW_MODULE
-
-# Update requirements if modules were added
-$ pip freeze > requirements.txt
-
-# Lint befor commiting
-$ pylint *
+# Check linting and formatting before commit
+$ pre-commit run --all-files
 
 # Add, commit, and push in git
 $ git add *
@@ -76,10 +68,9 @@ Linters and formatters are "enforced" with pre-commit hooks and GitHub Actions. 
 
 ## VSCode Settings
 
-todo
+See the `.vscode/settings.json` file for details if desired.
 
 ## pre-commit
-
 
 `pre-commit` is used to trigger linting and formatting during a git commit call.  Hooks are defined in `.pre-commit-config.yaml`.
 
@@ -103,9 +94,11 @@ $ pre-commit run --all-files
 
 ## GitHub Actions
 
-todo
+See `.github/workflows/linters.yml` for details.
 
 # Tools
+
+Linters and formatters are listed below.
 
 ## black
 
@@ -136,7 +129,7 @@ $ black src/
 
 `isort` is used to order import statements.
 
-* [ ] VSCode (`.vscode/settings.json`)
+* [x] VSCode (`.vscode/settings.json`)
 * [x] Git pre-commit hook
 * [x] GitHub Actions (`.github/workflows/linters.yml`)
 
@@ -199,9 +192,9 @@ $ mypy
 
 ## Automatic
 
-Merge your branch into the `test` branch.  GitHub actions will build and publish the package to [Test PyPI](https://test.pypi.org/project/exfill/).
+Create a pull request to merge into the 'main' branch.  First `linters.yml` will be triggered.  Next `publish-prod.yml` will be triggered.
 
-If there are no errors, a second merge request can be created from `test` into `main` branch.  This workflow will publish to [PyPI](https://pypi.org/project/exfill/)
+Check the [actions](https://github.com/jay-law/job-scraper/actions) page for progress. 
 
 ## Manual
 
@@ -212,6 +205,14 @@ It might be beneficial to manually publish a package.
 $ python3 -m pip install --upgrade build
 $ python3 -m pip install --upgrade setuptools_scm
 $ python3 -m pip install --upgrade twine
+
+# Note - The package version is derived from the git tag
+
+# (optional) Validate version
+$ git describe
+
+# (optional) Update version if needed
+$ git tag -a 0.x.x -m 'version 0.x.x'
 
 # Build 
 $ python3 -m build
