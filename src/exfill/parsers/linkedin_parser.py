@@ -34,6 +34,10 @@ class LinkedinParser(Parser):
 
             posting.parse_html()
 
+            self.all_postings.append(posting.posting_info)
+            if len(posting.error_info):
+                self.all_postings_err.append(posting.error_info)
+
     def export(self) -> None:
         """Export all postings to CSV file"""
         logging.info(f"Exporting to {self.output_file}")
@@ -46,13 +50,19 @@ class LinkedinParser(Parser):
 
 
 class Posting:
-    def __init__(self, posting_file, config) -> None:
+    def __init__(self, input_file_name, config) -> None:
         # Objects to be exported
         self.posting_info: dict = {}
         self.error_info: dict = {}
 
-        self.posting_file = posting_file
-        self.posting_info["md_file"] = posting_file
+        self.config = config
+
+        # example input_file
+        # data/html/jobid_3073117034_20220516_180232.html
+        # example input_file_name
+        # jobid_3073117034_20220516_180232.html
+        self.input_file_name = input_file_name
+        self.posting_info["md_file"] = input_file_name
 
         self.time_stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.posting_info["md_datetime"] = self.time_stamp
@@ -60,45 +70,59 @@ class Posting:
         # Assume no errors
         self.posting_info["error_flg"] = 0
 
-        # Create BeautifulSoup object from html element
-        self.input_file_name = os.path.join(
-            config.get("Parser", "input_dir"), posting_file
-        )
-        with open(self.input_file_name, mode="r", encoding="UTF-8") as file:
-            self.soup = BeautifulSoup(file, "html.parser")
-
     def parse_html(self) -> None:
-        self.set_jobid()
-        self.set_posting_url()
-        self.set_title()
-        self.set_company_info()
-        self.set_workplace_type()
-        self.set_company_details()
+        input_dir = self.set_input_dir()
+        input_file = self.set_input_file(input_dir, self.input_file_name)
+        soup = self.make_soup(input_file)
 
-    def set_jobid(self) -> None:
-        # Use jobid as the index for dataframe
-        jobid = self.posting_file.split("_")
-        self.jobid = jobid[1]
-        logging.info(f"{self.jobid} - Parsing job ")
-        self.posting_info["jobid"] = self.jobid
+        # Set jobid
+        self.posting_info["jobid"] = self.set_jobid(self.input_file_name)
 
-    def set_posting_url(self) -> None:
-        self.posting_info["posting_url"] = (
-            "https://www.linkedin.com/jobs/view/" + self.posting_info["jobid"]
+        # Set posting_url
+        self.posting_info["posting_url"] = self.set_posting_url(
+            self.posting_info["jobid"]
         )
 
-    def set_title(self) -> None:
+        # Set title
+        self.posting_info["title"] = self.set_title(soup)
+
+        # Set ?
+        self.set_company_info(soup)
+
+        # Set workplace_type
+        self.posting_info["workplace_type"] = self.set_workplace_type(soup)
+
+        # Set ?
+        self.set_company_details(soup)
+
+    def set_input_dir(self) -> str:
+        return self.config.get("Parser", "input_dir")
+
+    def set_input_file(self, input_dir: str, input_file_name: str) -> str:
+        return os.path.join(input_dir, input_file_name)
+
+    def make_soup(self, input_file: str) -> BeautifulSoup:
+        with open(input_file, mode="r", encoding="UTF-8") as f:
+            return BeautifulSoup(f, "html.parser")
+
+    def set_jobid(self, input_file_name: str) -> str:
+        jobid = input_file_name.split("_")[1]
+        logging.info(f"{jobid} - Parsing job ")
+        return jobid
+
+    def set_posting_url(self, jobid: str) -> str:
+        return "https://www.linkedin.com/jobs/view/" + jobid
+
+    def set_title(self, soup) -> str:
         # Set job title
         # t-24 OR t-16 should work
-        self.posting_info["title"] = self.soup.find(class_="t-24").text.strip()
+        return soup.find(class_="t-24").text.strip()
 
-    def set_company_info(self) -> None:
-        # temp_anchor = self.soup.select
+    def set_company_info(self, soup) -> None:
+        # temp_anchor = soup.select
         # ('span.jobs-unified-top-card__company-name > a')
         # company info
-        span_element = self.soup.select(
-            "span.jobs-unified-top-card__company-name"
-        )
+        span_element = soup.select("span.jobs-unified-top-card__company-name")
         anchor_element = span_element[0].select("a")
 
         if len(anchor_element) == 1:
@@ -107,14 +131,14 @@ class Posting:
         else:
             self.posting_info["company_name"] = span_element[0].text.strip()
 
-    def set_workplace_type(self) -> None:
+    def set_workplace_type(self, soup) -> str:
         # workplace_type. looking for remote
         # remote (f_WT=2) in url
-        self.posting_info["workplace_type"] = self.soup.find(
+        return soup.find(
             class_="jobs-unified-top-card__workplace-type"
         ).text.strip()
 
-    def set_company_details(self) -> None:
+    def set_company_details(self, soup) -> None:
 
         compnay_details_fields = [
             "company_size",
@@ -128,7 +152,7 @@ class Posting:
         # hours · level
         # company_size · company_industry
         # some postings have errors in the syntax
-        company_details = self.soup.find_all(string=re.compile(r" · "))
+        company_details = soup.find_all(string=re.compile(r" · "))
 
         # Some elements don't always load
         if len(company_details) == 0:
@@ -163,9 +187,9 @@ class Posting:
         logging.error(
             f"{self.posting_info['jobid']} - See error file for more info."
         )
-        self.error_info["jobid"] = self.jobid
+        self.error_info["jobid"] = self.posting_info["jobid"]
         self.error_info["md_datetime"] = self.time_stamp
-        self.error_info["md_file"] = self.posting_file
+        self.error_info["md_file"] = self.input_file_name
 
         self.error_info["error_message"] = err_msg
         self.posting_info["error_flg"] = 1
