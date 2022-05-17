@@ -7,9 +7,10 @@ import os
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 
-# from parsers.factory import ParserFactory
-from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
+from parsers.factory import ParserFactory
 from scrapers.factory import ScraperFactory
+
+# from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
 
 
 class ConfigFileMissing(Exception):
@@ -72,7 +73,9 @@ def main() -> None:
             scraper.scrape_postings(48)
 
         if args["action"] == "parse":
-            parse_linkedin_postings(config)
+            parser = ParserFactory.create("linkedin", config)
+            parser.say_hello()
+            # parse_linkedin_postings(config)
 
     logging.info("Finished execution.  Exiting application.")
 

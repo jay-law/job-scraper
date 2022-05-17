@@ -1,7 +1,17 @@
 """Parser module will process and aggregate job posting files.
 """
 
-from .parser import Parser
+from parsers.parser_base import Parser
+
+# from .parser import Parser
+
+
+class LinkedinParser(Parser):
+    def __init__(self, config):
+        self.config = config
+
+    def say_hello(self):
+        print("hello")
 
 
 def parse_linkedin_postings(config):
