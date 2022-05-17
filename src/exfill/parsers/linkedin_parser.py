@@ -66,7 +66,7 @@ class Posting:
         self.set_posting_url()
         self.set_title()
         self.set_company_info()
-        # self.set_workplace_type()
+        self.set_workplace_type()
         # self.set_company_details()
 
     def set_jobid(self) -> None:
@@ -100,6 +100,13 @@ class Posting:
             self.posting_info["company_name"] = anchor_element[0].text.strip()
         else:
             self.posting_info["company_name"] = span_element[0].text.strip()
+
+    def set_workplace_type(self) -> None:
+        # workplace_type. looking for remote
+        # remote (f_WT=2) in url
+        self.posting_info["workplace_type"] = self.soup.find(
+            class_="jobs-unified-top-card__workplace-type"
+        ).text.strip()
 
 
 def parse_linkedin_postings(config):
