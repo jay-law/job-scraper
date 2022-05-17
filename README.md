@@ -77,7 +77,7 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Move keyword logic
 * [x] Set/include default config.ini for users installing with PIP
 * [x] Add CICD
-* [ ] Automate versioning
+* [x] Automate versioning
 * [x] Add formatter (black module)
 * [x] Add static type checking (mypy module)
 * [x] Add import sorter (isort module)
