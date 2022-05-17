@@ -74,7 +74,7 @@ def main() -> None:
 
         if args["action"] == "parse":
             parser = ParserFactory.create("linkedin", config)
-            parser.say_hello()
+            parser.parse_postings()
             # parse_linkedin_postings(config)
 
     logging.info("Finished execution.  Exiting application.")
