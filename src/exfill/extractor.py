@@ -70,7 +70,7 @@ def main() -> None:
         scraper.scrape_postings(48)
 
     if args.get("action") == "parse":
-        parser = ParserFactory.create("linkedin", config)
+        parser = ParserFactory.create("linkeddin", config)
         parser.parse_postings()
 
     logging.info("Finished execution.  Exiting application.")
