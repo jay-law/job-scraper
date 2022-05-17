@@ -63,7 +63,7 @@ class Posting:
 
     def parse_html(self) -> None:
         self.set_jobid()
-        # self.set_posting_url()
+        self.set_posting_url()
         # self.set_title()
         # self.set_company_info()
         # self.set_workplace_type()
@@ -75,6 +75,11 @@ class Posting:
         self.jobid = jobid[1]
         logging.info(f"{self.jobid} - Parsing job ")
         self.posting_info["jobid"] = self.jobid
+
+    def set_posting_url(self) -> None:
+        self.posting_info["posting_url"] = (
+            "https://www.linkedin.com/jobs/view/" + self.posting_info["jobid"]
+        )
 
 
 def parse_linkedin_postings(config):
