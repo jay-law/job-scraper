@@ -10,8 +10,6 @@ from configparser import ConfigParser, ExtendedInterpolation
 from parsers.factory import ParserFactory
 from scrapers.factory import ScraperFactory
 
-# from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
-
 
 class ConfigFileMissing(Exception):
     pass
@@ -75,7 +73,6 @@ def main() -> None:
         if args["action"] == "parse":
             parser = ParserFactory.create("linkedin", config)
             parser.parse_postings()
-            # parse_linkedin_postings(config)
 
     logging.info("Finished execution.  Exiting application.")
 
