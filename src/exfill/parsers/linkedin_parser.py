@@ -176,13 +176,3 @@ class Posting:
         self.error_info["field"] = err_fields
         for field in err_fields:
             self.posting_info[field] = error_value
-
-
-def parse_linkedin_postings(config):
-    """Main parser function that controls program flow"""
-
-    linkedin_parser = Parser(config)
-
-    linkedin_parser.parse_files()
-
-    linkedin_parser.export()
