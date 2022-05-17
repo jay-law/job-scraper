@@ -64,7 +64,7 @@ class Posting:
     def parse_html(self) -> None:
         self.set_jobid()
         self.set_posting_url()
-        # self.set_title()
+        self.set_title()
         # self.set_company_info()
         # self.set_workplace_type()
         # self.set_company_details()
@@ -80,6 +80,11 @@ class Posting:
         self.posting_info["posting_url"] = (
             "https://www.linkedin.com/jobs/view/" + self.posting_info["jobid"]
         )
+
+    def set_title(self) -> None:
+        # Set job title
+        # t-24 OR t-16 should work
+        self.posting_info["title"] = self.soup.find(class_="t-24").text.strip()
 
 
 def parse_linkedin_postings(config):
