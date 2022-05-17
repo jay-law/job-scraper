@@ -84,3 +84,4 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Add linter (flake8 module)
 * [x] Update string interpolation from %f to f-string
 * [x] Replace sys.exit calls with exceptions
+* [x] Update how the config object is accessed

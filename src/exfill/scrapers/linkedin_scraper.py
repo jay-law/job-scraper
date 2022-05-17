@@ -34,8 +34,8 @@ class LinkedinScraper(Scraper):
         driver = webdriver.Firefox(
             executable_path=os.path.dirname(os.path.dirname(__file__))
             + "/"
-            + self.config["Paths"]["gecko_driver"],
-            service_log_path=self.config["Paths"]["gecko_log"],
+            + self.config.get("Paths", "gecko_driver"),
+            service_log_path=self.config.get("Paths", "gecko_log"),
         )
 
         driver.implicitly_wait(10)
@@ -46,10 +46,12 @@ class LinkedinScraper(Scraper):
     def browser_login(self) -> None:
 
         logging.info("Navigating to login page")
-        self.driver.get(self.config["URLs"]["linkedin_login"])
+        self.driver.get(self.config.get("URLs", "linkedin_login"))
 
         logging.info("Reading in creds")
-        with open(self.config["Paths"]["creds"], encoding="UTF-8") as creds:
+        with open(
+            self.config.get("Paths", "creds"), encoding="UTF-8"
+        ) as creds:
             cred_dict = json.load(creds)["linkedin"]
         logging.info(f"User name - {cred_dict['username']}")
 
@@ -77,7 +79,7 @@ class LinkedinScraper(Scraper):
     def export_html(self, page_source):
         soup = BeautifulSoup(page_source, "html.parser")
         output_file_prefix = os.path.join(
-            self.config["Scraper"]["linkedin_out_dir"], "jobid_"
+            self.config.get("Scraper", "linkedin_out_dir"), "jobid_"
         )
 
         # Find jobid - it's easier with beautifulsoup

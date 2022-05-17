@@ -54,7 +54,7 @@ def main() -> None:
     create_dirs(config)
 
     # Initialize logging
-    log_file_name = config["Paths"]["app_log"]
+    log_file_name = config.get("Paths", "app_log")
     logging.basicConfig(
         filename=log_file_name,
         level=logging.INFO,  # level=logging.INFO should be default
@@ -65,11 +65,11 @@ def main() -> None:
     args = init_parser()
     logging.info(f"Starting app with the following input args: {args}")
 
-    if args["action"] == "scrape":
+    if args.get("action") == "scrape":
         scraper = ScraperFactory.create("linkedin", config)
         scraper.scrape_postings(48)
 
-    if args["action"] == "parse":
+    if args.get("action") == "parse":
         parser = ParserFactory.create("linkedin", config)
         parser.parse_postings()
 

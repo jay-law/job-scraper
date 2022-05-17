@@ -21,9 +21,9 @@ class LinkedinParser(Parser):
         self.all_postings: list[Posting] = []
         self.all_postings_err: list[Posting] = []
 
-        self.input_dir = config["Parser"]["input_dir"]
-        self.output_file = config["Parser"]["output_file"]
-        self.output_file_errors = config["Parser"]["output_file_err"]
+        self.input_dir = config.get("Parser", "input_dir")
+        self.output_file = config.get("Parser", "output_file")
+        self.output_file_errors = config.get("Parser", "output_file_err")
 
     def parse_postings(self):
         if len(os.listdir(self.input_dir)) == 0:
@@ -62,7 +62,7 @@ class Posting:
 
         # Create BeautifulSoup object from html element
         self.input_file_name = os.path.join(
-            config["Parser"]["input_dir"], posting_file
+            config.get("Parser", "input_dir"), posting_file
         )
         with open(self.input_file_name, mode="r", encoding="UTF-8") as file:
             self.soup = BeautifulSoup(file, "html.parser")
