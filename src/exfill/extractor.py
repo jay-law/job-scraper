@@ -7,7 +7,7 @@ import os
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 
-from parsers.linkedin_parser import parse_linkedin_postings  # type: ignore
+from parsers.factory import ParserFactory
 from scrapers.factory import ScraperFactory
 
 
@@ -65,13 +65,13 @@ def main() -> None:
     args = init_parser()
     logging.info(f"Starting app with the following input args: {args}")
 
-    if args["site"] == "linkedin":
-        if args["action"] == "scrape":
-            scraper = ScraperFactory.create("linkedin", config)
-            scraper.scrape_postings(48)
+    if args["action"] == "scrape":
+        scraper = ScraperFactory.create("linkedin", config)
+        scraper.scrape_postings(48)
 
-        if args["action"] == "parse":
-            parse_linkedin_postings(config)
+    if args["action"] == "parse":
+        parser = ParserFactory.create("linkedin", config)
+        parser.parse_postings()
 
     logging.info("Finished execution.  Exiting application.")
 

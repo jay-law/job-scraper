@@ -11,7 +11,7 @@ from scrapers.scraper_base import Scraper
 from selenium import webdriver
 
 
-class LinkedInScraper(Scraper):
+class LinkedinScraper(Scraper):
     def __init__(self, config):
         self.config = config
 
