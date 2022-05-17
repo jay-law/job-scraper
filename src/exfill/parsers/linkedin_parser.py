@@ -1,6 +1,6 @@
 """Parser module will process and aggregate job posting files.
 """
-# import logging
+import logging
 import os
 
 # import re
@@ -62,13 +62,19 @@ class Posting:
             self.soup = BeautifulSoup(file, "html.parser")
 
     def parse_html(self) -> None:
-        print("parsing files")
-        # self.set_jobid()
+        self.set_jobid()
         # self.set_posting_url()
         # self.set_title()
         # self.set_company_info()
         # self.set_workplace_type()
         # self.set_company_details()
+
+    def set_jobid(self) -> None:
+        # Use jobid as the index for dataframe
+        jobid = self.posting_file.split("_")
+        self.jobid = jobid[1]
+        logging.info(f"{self.jobid} - Parsing job ")
+        self.posting_info["jobid"] = self.jobid
 
 
 def parse_linkedin_postings(config):
