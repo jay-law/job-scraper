@@ -19,6 +19,15 @@ class InvalidConfigArg(Exception):
     pass
 
 
+class InvalidFileName(Exception):
+    pass
+
+
+class EmptySoup(Exception):
+    "That is some bad soup"
+    pass
+
+
 @dataclass
 class Posting:
     # config props
@@ -85,13 +94,13 @@ class LinkedinParser(Parser):
 
         for input_file_name in os.listdir(self.input_dir):
 
-            post = Posting(input_file_name=input_file_name)
+            post = Posting(input_file_name)
 
             # posting - set config props
             post.input_file = self.set_posting_input_file(
                 self.input_dir, input_file_name
             )
-            post.soup = self.make_soup(post.input_file)
+            post.soup = self.set_posting_soup(post.input_file)
 
             # posting - set export props
             post.jobid = self.set_posting_jobid(input_file_name)
@@ -111,59 +120,129 @@ class LinkedinParser(Parser):
 
         self.parse_export()
 
-    # posting - config prop
+    # input_file - config prop
     def set_posting_input_file(
         self, input_dir: str, input_file_name: str
     ) -> str:
         return os.path.join(input_dir, input_file_name)
 
-    # posting - config prop
-    def make_soup(self, input_file: str) -> BeautifulSoup:
-        with open(input_file, mode="r", encoding="UTF-8") as f:
-            return BeautifulSoup(f, "html.parser")
+    # soup - config prop
+    def set_posting_soup(self, input_file: str) -> BeautifulSoup:
 
-    # posting - export prop
-    def set_posting_jobid(self, input_file: str) -> str:
-        jobid = input_file.split("_")[1]
-        logging.info(f"{jobid} - Parsing job ")
-        return jobid
+        try:
+            with open(input_file, mode="r", encoding="UTF-8") as f:
+                soup = BeautifulSoup(f, "html.parser")
+        except FileNotFoundError as e:
+            raise InvalidFileName(e) from None
+        except OSError as e:
+            raise InvalidFileName(e) from None
+        else:
+            return soup
 
-    # posting - export prop
+    # jobid - export prop
+    def set_posting_jobid(self, input_file_name: str) -> str:
+        try:
+            jobid = input_file_name.split("_")[1]
+        except IndexError as e:
+            raise InvalidFileName(e) from None
+        else:
+            logging.info(f"{jobid} - Parsing job ")
+            return jobid
+
+    # url - export prop
     def set_posting_url(self, jobid: str) -> str:
         return "https://www.linkedin.com/jobs/view/" + jobid
 
-    # posting - export prop
+    # title - export prop
     def set_posting_title(self, soup: BeautifulSoup) -> str:
-        # Set job title
-        # t-24 OR t-16 should work
-        return soup.find(class_="t-24").text.strip()
 
-    # posting - export prop
+        try:
+            assert type(soup) is BeautifulSoup
+            title = soup.find(class_="t-24")
+
+            if title is None:
+                raise EmptySoup("workplace_type is missing")
+
+        except EmptySoup as e:
+            logging.error(f"Err msg - {e}")
+            return "missing"
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error"
+        else:
+            return title.text.strip()
+
+    # workplace_type - export prop
     def set_posting_workplace_type(self, soup: BeautifulSoup) -> str:
-        # workplace_type. looking for remote
-        # remote (f_WT=2) in url
-        return soup.find(
-            class_="jobs-unified-top-card__workplace-type"
-        ).text.strip()
 
-    # posting - export prop
+        try:
+            assert type(soup) is BeautifulSoup
+
+            # workplace_type. looking for remote (f_WT=2 in url)
+            workplace_type = soup.find(
+                class_="jobs-unified-top-card__workplace-type"
+            )
+
+            if workplace_type is None:
+                raise EmptySoup("workplace_type is missing")
+
+        except EmptySoup as e:
+            logging.error(f"Err msg - {e}")
+            return "missing"
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error"
+        else:
+            return workplace_type.text.strip()
+
+    # company_name - export prop
     def set_posting_company_name(self, soup: BeautifulSoup) -> str:
-        return (
-            soup.find("span", class_="jobs-unified-top-card__company-name")
-            .find("a")
-            .text.strip()
-        )
 
-    # posting - export prop
+        try:
+            assert type(soup) is BeautifulSoup
+            company_name = soup.find(
+                "span", class_="jobs-unified-top-card__company-name"
+            ).find("a")
+
+        # AttributeError can occur on second find()
+        except AttributeError as e:
+            logging.error(f"Err msg - {e}")
+            return "missing"
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error"
+        else:
+            return company_name.text.strip()
+
+    # company_url - export prop
     def set_posting_company_url(self, soup: BeautifulSoup) -> str:
-        return soup.find(
-            "span", class_="jobs-unified-top-card__company-name"
-        ).find("a")["href"]
 
-    # posting - export prop
+        try:
+            assert type(soup) is BeautifulSoup
+            company_url = soup.find(
+                "span", class_="jobs-unified-top-card__company-name"
+            ).find("a")["href"]
+
+        # AttributeError can occur on second find()
+        except AttributeError as e:
+            logging.error(f"Err msg - {e}")
+            return "missing"
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error"
+        else:
+            return company_url.strip()
+
+    # company_details - export props
     def set_posting_company_details(self, soup: BeautifulSoup) -> tuple:
 
-        company_details = soup.find_all(string=re.compile(r" · "))
+        try:
+            assert type(soup) is BeautifulSoup
+            company_details = soup.find_all(string=re.compile(r" · "))
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error", "error", "error", "error"
+
         company_size: str = "missing"
         company_industry: str = "missing"
         hours: str = "missing"
