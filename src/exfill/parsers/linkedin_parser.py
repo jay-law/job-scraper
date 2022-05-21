@@ -3,7 +3,8 @@
 import logging
 import os
 import re
-from datetime import datetime
+from configparser import NoOptionError, NoSectionError
+from dataclasses import dataclass, field
 
 from bs4 import BeautifulSoup
 from pandas import DataFrame
@@ -14,163 +15,250 @@ class NoImportFiles(Exception):
     pass
 
 
+class InvalidConfigArg(Exception):
+    pass
+
+
+class InvalidFileName(Exception):
+    pass
+
+
+class EmptySoup(Exception):
+    "That is some bad soup"
+    pass
+
+
+@dataclass
+class Posting:
+    # config props
+    input_file_name: str
+    input_file: str = ""
+    soup: BeautifulSoup = field(default=BeautifulSoup(), repr=False)
+
+    # export props
+    jobid: str = ""
+    url: str = ""
+    title: str = ""
+    workplace_type: str = ""
+    company_name: str = ""
+    company_url: str = ""
+    company_size: str = ""
+    company_industry: str = ""
+    hours: str = ""
+    level: str = ""
+
+    # used to replace asdict() as that has limited options
+    def to_dict(self) -> dict:
+        return {
+            "jobid": self.jobid,
+            "url": self.url,
+            "title": self.title,
+            "company_name": self.company_name,
+            "workplace_type": self.workplace_type,
+            "company_url": self.company_url,
+            "company_size": self.company_size,
+            "company_industry": self.company_industry,
+            "hours": self.hours,
+            "level": self.level,
+        }
+
+
 class LinkedinParser(Parser):
     def __init__(self, config):
         self.config = config
 
-        self.all_postings: list[Posting] = []
-        self.all_postings_err: list[Posting] = []
+        # lists to hold each posting
+        self.postings: list[dict] = []
+        self.postings_err: list[dict] = []
 
-        self.input_dir = config.get("Parser", "input_dir")
-        self.output_file = config.get("Parser", "output_file")
-        self.output_file_errors = config.get("Parser", "output_file_err")
+        try:
+            self.output_file = config.get("Parser", "output_file")
+            self.output_file_errors = config.get("Parser", "output_file_err")
+            self.input_dir = config.get("Parser", "input_dir")
+        except NoSectionError as e:
+            raise InvalidConfigArg(e.message) from None
+        except NoOptionError as e:
+            raise InvalidConfigArg(e.message) from None
 
-    def parse_postings(self):
+    # parser
+    def parse_export(self) -> None:
+        """Export all postings to CSV file"""
+        logging.info(f"Exporting to {self.output_file}")
+        DataFrame(self.postings).to_csv(self.output_file, index=False)
+
+    # parser
+    def parse_postings(self) -> None:
+
         if len(os.listdir(self.input_dir)) == 0:
             raise NoImportFiles("There are no files to import")
 
-        for input_file in os.listdir(self.input_dir):
-            posting = Posting(input_file, self.config)
+        for input_file_name in os.listdir(self.input_dir):
 
-            posting.parse_html()
+            post = Posting(input_file_name)
 
-    def export(self) -> None:
-        """Export all postings to CSV file"""
-        logging.info(f"Exporting to {self.output_file}")
-        DataFrame(self.all_postings).to_csv(self.output_file, index=False)
+            # posting - set config props
+            post.input_file = self.set_posting_input_file(
+                self.input_dir, input_file_name
+            )
+            post.soup = self.set_posting_soup(post.input_file)
 
-        logging.info(f"Exporting errors to {self.output_file_errors}")
-        DataFrame(self.all_postings_err).to_csv(
-            self.output_file_errors, index=False
-        )
+            # posting - set export props
+            post.jobid = self.set_posting_jobid(input_file_name)
+            post.url = self.set_posting_url(post.jobid)
+            post.title = self.set_posting_title(post.soup)
+            post.workplace_type = self.set_posting_workplace_type(post.soup)
+            post.company_name = self.set_posting_company_name(post.soup)
+            post.company_url = self.set_posting_company_url(post.soup)
+            (
+                post.company_size,
+                post.company_industry,
+                post.hours,
+                post.level,
+            ) = self.set_posting_company_details(post.soup)
 
+            self.postings.append(post.to_dict())
 
-class Posting:
-    def __init__(self, posting_file, config) -> None:
-        # Objects to be exported
-        self.posting_info: dict = {}
-        self.error_info: dict = {}
+        self.parse_export()
 
-        self.posting_file = posting_file
-        self.posting_info["md_file"] = posting_file
+    # input_file - config prop
+    def set_posting_input_file(
+        self, input_dir: str, input_file_name: str
+    ) -> str:
+        return os.path.join(input_dir, input_file_name)
 
-        self.time_stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.posting_info["md_datetime"] = self.time_stamp
+    # soup - config prop
+    def set_posting_soup(self, input_file: str) -> BeautifulSoup:
 
-        # Assume no errors
-        self.posting_info["error_flg"] = 0
-
-        # Create BeautifulSoup object from html element
-        self.input_file_name = os.path.join(
-            config.get("Parser", "input_dir"), posting_file
-        )
-        with open(self.input_file_name, mode="r", encoding="UTF-8") as file:
-            self.soup = BeautifulSoup(file, "html.parser")
-
-    def parse_html(self) -> None:
-        self.set_jobid()
-        self.set_posting_url()
-        self.set_title()
-        self.set_company_info()
-        self.set_workplace_type()
-        self.set_company_details()
-
-    def set_jobid(self) -> None:
-        # Use jobid as the index for dataframe
-        jobid = self.posting_file.split("_")
-        self.jobid = jobid[1]
-        logging.info(f"{self.jobid} - Parsing job ")
-        self.posting_info["jobid"] = self.jobid
-
-    def set_posting_url(self) -> None:
-        self.posting_info["posting_url"] = (
-            "https://www.linkedin.com/jobs/view/" + self.posting_info["jobid"]
-        )
-
-    def set_title(self) -> None:
-        # Set job title
-        # t-24 OR t-16 should work
-        self.posting_info["title"] = self.soup.find(class_="t-24").text.strip()
-
-    def set_company_info(self) -> None:
-        # temp_anchor = self.soup.select
-        # ('span.jobs-unified-top-card__company-name > a')
-        # company info
-        span_element = self.soup.select(
-            "span.jobs-unified-top-card__company-name"
-        )
-        anchor_element = span_element[0].select("a")
-
-        if len(anchor_element) == 1:
-            self.posting_info["company_href"] = anchor_element[0]["href"]
-            self.posting_info["company_name"] = anchor_element[0].text.strip()
+        try:
+            with open(input_file, mode="r", encoding="UTF-8") as f:
+                soup = BeautifulSoup(f, "html.parser")
+        except FileNotFoundError as e:
+            raise InvalidFileName(e) from None
+        except OSError as e:
+            raise InvalidFileName(e) from None
         else:
-            self.posting_info["company_name"] = span_element[0].text.strip()
+            return soup
 
-    def set_workplace_type(self) -> None:
-        # workplace_type. looking for remote
-        # remote (f_WT=2) in url
-        self.posting_info["workplace_type"] = self.soup.find(
-            class_="jobs-unified-top-card__workplace-type"
-        ).text.strip()
+    # jobid - export prop
+    def set_posting_jobid(self, input_file_name: str) -> str:
+        try:
+            jobid = input_file_name.split("_")[1]
+        except IndexError as e:
+            raise InvalidFileName(e) from None
+        else:
+            logging.info(f"{jobid} - Parsing job ")
+            return jobid
 
-    def set_company_details(self) -> None:
+    # url - export prop
+    def set_posting_url(self, jobid: str) -> str:
+        return "https://www.linkedin.com/jobs/view/" + jobid
 
-        compnay_details_fields = [
-            "company_size",
-            "company_industry",
-            "hours",
-            "level",
-        ]
+    # title - export prop
+    def set_posting_title(self, soup: BeautifulSoup) -> str:
 
-        # Grab hours, level, company_size, and company_industry
-        # syntax should be:
-        # hours · level
-        # company_size · company_industry
-        # some postings have errors in the syntax
-        company_details = self.soup.find_all(string=re.compile(r" · "))
+        try:
+            assert type(soup) is BeautifulSoup
+            title = soup.find(class_="t-24")
 
-        # Some elements don't always load
-        if len(company_details) == 0:
-            err_msg = "Company details do not exist or were not loaded"
-            self.flag_error(err_msg, compnay_details_fields)
+            if title is None:
+                raise EmptySoup("workplace_type is missing")
 
-            return
+        except EmptySoup as e:
+            logging.error(f"Err msg - {e}")
+            return "missing"
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error"
+        else:
+            return title.text.strip()
+
+    # workplace_type - export prop
+    def set_posting_workplace_type(self, soup: BeautifulSoup) -> str:
+
+        try:
+            assert type(soup) is BeautifulSoup
+
+            # workplace_type. looking for remote (f_WT=2 in url)
+            workplace_type = soup.find(
+                class_="jobs-unified-top-card__workplace-type"
+            )
+
+            if workplace_type is None:
+                raise EmptySoup("workplace_type is missing")
+
+        except EmptySoup as e:
+            logging.error(f"Err msg - {e}")
+            return "missing"
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error"
+        else:
+            return workplace_type.text.strip()
+
+    # company_name - export prop
+    def set_posting_company_name(self, soup: BeautifulSoup) -> str:
+
+        try:
+            assert type(soup) is BeautifulSoup
+            company_name = soup.find(
+                "span", class_="jobs-unified-top-card__company-name"
+            ).find("a")
+
+        # AttributeError can occur on second find()
+        except AttributeError as e:
+            logging.error(f"Err msg - {e}")
+            return "missing"
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error"
+        else:
+            return company_name.text.strip()
+
+    # company_url - export prop
+    def set_posting_company_url(self, soup: BeautifulSoup) -> str:
+
+        try:
+            assert type(soup) is BeautifulSoup
+            company_url = soup.find(
+                "span", class_="jobs-unified-top-card__company-name"
+            ).find("a")["href"]
+
+        # AttributeError can occur on second find()
+        except AttributeError as e:
+            logging.error(f"Err msg - {e}")
+            return "missing"
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error"
+        else:
+            return company_url.strip()
+
+    # company_details - export props
+    def set_posting_company_details(self, soup: BeautifulSoup) -> tuple:
+
+        try:
+            assert type(soup) is BeautifulSoup
+            company_details = soup.find_all(string=re.compile(r" · "))
+        except AssertionError:
+            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            return "error", "error", "error", "error"
+
+        company_size: str = "missing"
+        company_industry: str = "missing"
+        hours: str = "missing"
+        level: str = "missing"
 
         for section in company_details:
 
-            logging.debug(f"{self.posting_info['jobid']} - {section}")
-            section_split = section.strip().split(" · ")
+            section = section.strip()
 
-            if not len(section_split) == 2:
-                err_msg = (
-                    "Company details section does not have exactly "
-                    "two elements when splitting on ' · '"
-                )
-                self.flag_error(err_msg, compnay_details_fields)
-                continue
+            # remove leading dots if they exist
+            if section[0] == "·":
+                section = section[1:].strip()
 
-            if "employees" in section:
-                self.posting_info["company_size"] = section_split[0]
-                self.posting_info["company_industry"] = section_split[1]
+            if "employees" in section and section.count(" · ") == 1:
+                company_size, company_industry = section.split(" · ")
+            elif "Full-time" in section and section.count(" · ") == 1:
+                hours, level = section.split(" · ")
 
-            elif "Full-time" in section:
-                self.posting_info["hours"] = section_split[0]
-                self.posting_info["level"] = section_split[1]
-
-    def flag_error(self, err_msg: str, err_fields: list) -> None:
-
-        logging.error(
-            f"{self.posting_info['jobid']} - See error file for more info."
-        )
-        self.error_info["jobid"] = self.jobid
-        self.error_info["md_datetime"] = self.time_stamp
-        self.error_info["md_file"] = self.posting_file
-
-        self.error_info["error_message"] = err_msg
-        self.posting_info["error_flg"] = 1
-        error_value = "ERROR"
-
-        self.error_info["field"] = err_fields
-        for field in err_fields:
-            self.posting_info[field] = error_value
+        return company_size, company_industry, hours, level

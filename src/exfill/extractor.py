@@ -7,7 +7,7 @@ import os
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 
-from parsers.factory import ParserFactory
+from parsers.parser_factory import ParserFactory
 from scrapers.factory import ScraperFactory
 
 
