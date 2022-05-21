@@ -1,10 +1,6 @@
-from pathlib import Path
-
 from bs4 import BeautifulSoup
 from parsers.linkedin_parser import InvalidFileName, LinkedinParser
 from tests.main import BaseTest
-
-CURRENT_DIR = Path(__file__).parent
 
 
 class TestLinkedinParserPosting(BaseTest):
@@ -153,7 +149,7 @@ class TestLinkedinParserPosting(BaseTest):
             self.parser.set_posting_company_url(self.bad_sip), "error"
         )
 
-    # company_details
+    # company_details - export props
     def test_set_posting_company_details(self):
 
         good_sip = BeautifulSoup(
