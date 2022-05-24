@@ -48,6 +48,8 @@ There are two phase.  First is scraping the postings.  Second is parsing the scr
 # Install with git
 $ git clone git@github.com:jay-law/job-scraper.git
 
+# Create and populate creds.json
+
 # Execute - Scrape linkedin
 $ python3 src/exfill/extractor.py linkedin scrape
 
@@ -56,6 +58,8 @@ $ python3 src/exfill/extractor.py linkedin parse
 ```
 
 ## Use as Module
+
+NOTE - This was broken during the implementation of poetry.  It will be fixed soon... Hopefully
 
 ```bash
 # Install
