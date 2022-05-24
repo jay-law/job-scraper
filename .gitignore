@@ -1,3 +1,6 @@
+parser_linkedin_config_props_tests.py
+_pyproject.toml
+
 scrap/
 data/
 logs/
