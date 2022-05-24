@@ -1,6 +1,6 @@
 # Introduction
 
-Job boards (like LinkedIn) can be a good source for finding job openings.  Unfortunately the search results cannot always be filtered to a usable degree.  This application lets users scrape and parse jobs with more flexability provided by the default search.
+Job boards (like LinkedIn) can be a good source for finding job openings.  Unfortunately the search results cannot always be filtered to a usable degree.  Exfill (short for extraction) lets users scrape and parse jobs with more flexability provided by the default search.
 
 Currently only LinkedIn is supported.
 
