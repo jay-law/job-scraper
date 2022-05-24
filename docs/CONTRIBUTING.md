@@ -61,7 +61,7 @@ See the `.vscode/settings.json` file for details if desired.
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade pre-commit
+$ poetry add pre-commit --dev
 
 # Add .pre-commit-config.yaml file
 
@@ -99,7 +99,7 @@ If changes are not made on save, there might be a problem with `pyproject.toml`.
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade black
+$ poetry add black --dev
 
 # Run manually - Check if files will be changed
 $ black --check src/
@@ -122,7 +122,7 @@ Settings - `pyproject.toml`
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade isort
+$ poetry add isort --dev
 
 # Run manually - See difference but don't make change
 $ isort --check --diff .
@@ -145,7 +145,7 @@ Settings - None. Just using default config.
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade flake8
+$ poetry add flake8 --dev
 
 # Run manually
 $ flake8 src/
@@ -165,7 +165,7 @@ $ flake8 src/
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade mypy
+$ poetry add mypy --dev
 
 # Run manually
 $ mypy
