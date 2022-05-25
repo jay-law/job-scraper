@@ -1,4 +1,5 @@
 {
+  // "python.analysis.indexing" : true,
   "python.formatting.provider": "black",
   "python.linting.flake8Enabled": true,
   "editor.formatOnSave": false,
@@ -11,5 +12,8 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
     }
-  }
+  },
+  "python.analysis.extraPaths": [
+    "exfill"
+  ]
 }
