@@ -1,10 +1,10 @@
 """Parser module will process and aggregate job posting files.
 """
 import logging
-import os
 import re
 from configparser import NoOptionError, NoSectionError
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 from pandas import DataFrame
@@ -75,7 +75,10 @@ class LinkedinParser(Parser):
         try:
             self.output_file = config.get("Parser", "output_file")
             self.output_file_errors = config.get("Parser", "output_file_err")
-            self.input_dir = config.get("Parser", "input_dir")
+            # self.input_dir = config.get("Parser", "input_dir")
+            self.input_dir = Path(
+                Path.cwd() / config.get("Parser", "input_dir")
+            )
         except NoSectionError as e:
             raise InvalidConfigArg(e.message) from None
         except NoOptionError as e:
@@ -90,10 +93,10 @@ class LinkedinParser(Parser):
     # parser
     def parse_postings(self) -> None:
 
-        if len(os.listdir(self.input_dir)) == 0:
+        if not any(self.input_dir.iterdir()):
             raise NoImportFiles("There are no files to import")
 
-        for input_file_name in os.listdir(self.input_dir):
+        for input_file_name in self.input_dir.iterdir():
 
             post = Posting(input_file_name)
 
@@ -125,7 +128,7 @@ class LinkedinParser(Parser):
     def set_posting_input_file(
         self, input_dir: str, input_file_name: str
     ) -> str:
-        return os.path.join(input_dir, input_file_name)
+        return Path(input_dir / input_file_name)
 
     # soup - config prop
     def set_posting_soup(self, input_file: str) -> BeautifulSoup:
@@ -143,7 +146,7 @@ class LinkedinParser(Parser):
     # jobid - export prop
     def set_posting_jobid(self, input_file_name: str) -> str:
         try:
-            jobid = input_file_name.split("_")[1]
+            jobid = str(input_file_name).split("_")[1]
         except IndexError as e:
             raise InvalidFileName(e) from None
         else:
