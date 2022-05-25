@@ -1,6 +1,7 @@
 """Set path for import
 """
-# import os
-# import sys
 
-# sys.path.append(os.path.dirname(__file__))
+from pathlib import PurePath
+from site import addsitedir
+
+addsitedir(PurePath(__file__).parent)

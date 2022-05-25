@@ -210,6 +210,7 @@ NOTE - This was broken during the implementation of poetry.  It will be fixed so
 ```bash
 # Create new project
 $ poetry new python-test
+$ cd python-test
 
 # Activate virtual env 
 $ poetry shell

@@ -3,9 +3,9 @@ each posting, then combine all of the information into a single useable
 csv file.
 """
 import logging
-import os
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
+from pathlib import Path, PurePath
 
 from parsers.parser_factory import ParserFactory
 from scrapers.factory import ScraperFactory
@@ -28,8 +28,8 @@ def init_parser() -> dict:
 def load_config() -> ConfigParser:
     """Load config file"""
 
-    config_file = os.path.dirname(__file__) + "/config.ini"
-    if not os.path.exists(config_file):
+    config_file = PurePath(__file__).parent / "config.ini"
+    if not Path(config_file).exists():
         raise ConfigFileMissing("Default config.ini is missing")
 
     config = ConfigParser(interpolation=ExtendedInterpolation())
@@ -40,10 +40,8 @@ def load_config() -> ConfigParser:
 
 def create_dirs(config: ConfigParser) -> None:
     """Create directories referenced in the config file"""
-    # for item in config['Directories']:
     for dir_path in config.items("Directories"):
-        if not os.path.exists(dir_path[1]):
-            os.mkdir(dir_path[1])
+        Path.mkdir(Path.cwd() / dir_path[1], exist_ok=True)
 
 
 def main() -> None:
@@ -54,9 +52,8 @@ def main() -> None:
     create_dirs(config)
 
     # Initialize logging
-    log_file_name = config.get("Paths", "app_log")
     logging.basicConfig(
-        filename=log_file_name,
+        filename=config.get("Paths", "app_log"),
         level=logging.INFO,  # level=logging.INFO should be default
         format="[%(asctime)s] [%(levelname)s] - %(message)s",
         filemode="w+",
