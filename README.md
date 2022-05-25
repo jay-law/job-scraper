@@ -1,6 +1,6 @@
 # Introduction
 
-Job boards (like LinkedIn) can be a good source for finding job openings.  Unfortunately the search results cannot always be filtered to a usable degree.  This application lets users scrape and parse jobs with more flexability provided by the default search.
+Job boards (like LinkedIn) can be a good source for finding job openings.  Unfortunately the search results cannot always be filtered to a usable degree.  Exfill (short for extraction) lets users scrape and parse jobs with more flexability provided by the default search.
 
 Currently only LinkedIn is supported.
 
@@ -40,13 +40,24 @@ Syntax should be as follows:
 
 # Usage
 
-There are two phase.  First is scraping the postings.  Second is parsing the scraped information.  Therefore the scraping phase must occur before the parsing phase.
+There are two `actions` required to generate usable data:
+
+First is the scraping action.  When called, a browser will open and perform a job query on the specified `site`.  Each posting will be exported to the `data/html` directory.  
+
+The second action is parsing.  Each job posting in `data/html` will be opened and analyzed.  Once all postings have been analyzed a single CSV file will be exported to `data/csv`.
+
+The csv file provides a high-level overview of all the jobs returned during the query.  When imported to a spreadsheet, users can filter on fields not present in the original search options.  Examples include sorting by companies or excluding certain industries.
 
 ## Use as Code
 
 ```bash
 # Install with git
 $ git clone git@github.com:jay-law/job-scraper.git
+
+# Create and populate creds.json
+
+# Activate virtual env
+$ poetry shell
 
 # Execute - Scrape linkedin
 $ python3 src/exfill/extractor.py linkedin scrape
@@ -56,6 +67,8 @@ $ python3 src/exfill/extractor.py linkedin parse
 ```
 
 ## Use as Module
+
+NOTE - This was broken during the implementation of poetry.  It will be fixed soon... Hopefully
 
 ```bash
 # Install
@@ -85,3 +98,4 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Update string interpolation from %f to f-string
 * [x] Replace sys.exit calls with exceptions
 * [x] Update how the config object is accessed
+* [x] Migrate to `poetry` for virtual env, building, and publishing

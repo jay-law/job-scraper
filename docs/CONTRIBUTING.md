@@ -1,22 +1,11 @@
 
 # Config Development Environment
 
-## Install Python
+## Install Python and Poetry
 
 Tested on Ubuntu Ubuntu 20.04.4 LTS (64-bit) and Python 3.8.10.
 
-```bash
-# Confirm Python 3 is installed
-$ python3 --version
-
-Python 3.8.10
-
-# Install venv
-$ sudo apt install python3.8-venv
-
-# Install pip
-$ sudo apt install python3-pip
-```
+[Poetry](https://python-poetry.org/docs/) is used for the virtual environment, building, and publishing.  Install and configure according to the official documentation.
 
 ## Clone Repo
 
@@ -28,14 +17,8 @@ $ cd job-scraper/
 # Create new branch
 $ git checkout -b BRANCH_NAME
 
-# Create venv
-$ python3 -m venv venv
-
-# Activate venv
-$ source venv/bin/activate
-
-# Install requirements
-$ pip install -r requirements.txt
+# Activate virtual env
+$ poetry shell
 
 ########################
 # make changes to code
@@ -78,7 +61,7 @@ See the `.vscode/settings.json` file for details if desired.
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade pre-commit
+$ poetry add pre-commit --dev
 
 # Add .pre-commit-config.yaml file
 
@@ -116,7 +99,7 @@ If changes are not made on save, there might be a problem with `pyproject.toml`.
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade black
+$ poetry add black --dev
 
 # Run manually - Check if files will be changed
 $ black --check src/
@@ -139,7 +122,7 @@ Settings - `pyproject.toml`
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade isort
+$ poetry add isort --dev
 
 # Run manually - See difference but don't make change
 $ isort --check --diff .
@@ -162,7 +145,7 @@ Settings - None. Just using default config.
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade flake8
+$ poetry add flake8 --dev
 
 # Run manually
 $ flake8 src/
@@ -182,7 +165,7 @@ $ flake8 src/
 
 ```bash
 # Install
-$ python3 -m pip install --upgrade mypy
+$ poetry add mypy --dev
 
 # Run manually
 $ mypy
@@ -201,47 +184,35 @@ Check the [actions](https://github.com/jay-law/job-scraper/actions) page for pro
 It might be beneficial to manually publish a package.
 
 ```bash
-# Install required tools
-$ python3 -m pip install --upgrade build
-$ python3 -m pip install --upgrade setuptools_scm
-$ python3 -m pip install --upgrade twine
+# Update version
+$ poetry version patch
 
-# Note - The package version is derived from the git tag
+# Build
+$ poetry build
 
-# (optional) Validate version
-$ git describe
+# Publish - test (might require you to add the test pypi repo)
+$ poetry publish -r testpypi
 
-# (optional) Update version if needed
-$ git tag -a 0.x.x -m 'version 0.x.x'
-
-# Build 
-$ python3 -m build
-
-# Publish - test
-$ python3 -m twine upload --repository testpypi --skip-existing dist/*
-
-# Publish - prod
-$ python3 -m twine upload --repository pypi --skip-existing dist/*
+# Publish
+$ poetry publish
 ```
 
 ## Testing Published Package
 
+NOTE - This was broken during the implementation of poetry.  It will be fixed soon... Hopefully
+
 ```bash
-$ mkdir python_test
-$ cd python_test
+# Create new project
+$ poetry new python-test
 
-# Create venv
-$ python3 -m venv venv
-
-# Activate venv
-$ source venv/bin/activate
+# Activate virtual env 
+$ poetry shell
 
 # Install from TestPyPI
-# --extra-index-url helps with packages in prod but not test pypi
-$ python3 -m pip install --extra-index-url https://test.pypi.org/simple/ exfill -U
+?
 
-# Or install from PyPI
-$ python3 -m pip install --upgrade exfill
+# Install from PyPI
+$ poetry add exfill
 
 # Execute as mentioned in the README
 ```

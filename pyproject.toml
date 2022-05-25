@@ -1,45 +1,33 @@
-[project]
+[tool.poetry]
 name = "exfill"
-dynamic = ['version']
-authors = [ 
-    { name = "Jay Law", email = "mr-jay-law@protonmail.com" }
-]
-readme = "README.md"
+version = "0.1.17"
 description = "A small app to grab job postings from online job boards"
-requires-python = ">=3.8"
-dependencies = [
-    "pandas",
-    "beautifulsoup4",
-    "selenium"
-]
-
-[project.urls]
+authors = ["jay-law <jay-law@users.noreply.github.com>"]
+readme = "README.md"
 homepage = "https://github.com/jay-law/job-scraper"
 repository = "https://github.com/jay-law/job-scraper"
 documentation = "https://github.com/jay-law/job-scraper"
 
-[project.scripts]
-cli-script = "exfill.extractor:main"
+[tool.poetry.scripts]
+cli-script = "src.exfill.extractor:main"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+bs4 = "^0.0.1"
+pandas = "^1.4.2"
+selenium = "^4.1.5"
+setuptools-scm = "^6.4.2"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.19.0"
+black = "^22.3.0"
+isort = "^5.10.1"
+flake8 = "^4.0.1"
+mypy = "^0.950"
 
 [build-system]
-requires = [
-    "setuptools>=42", 
-    "setuptools_scm[toml]>=6.2"
-]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-package-dir = {"" = "src"}
-packages = [
- "exfill", 
- "exfill.parsers",
- "exfill.scrapers"]
-
-[tool.setuptools.dynamic]
-version = {attr = "exfill.__version__"}
-
-#[tool.setuptools_scm]
-#version_scheme = "no-guess-dev"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 target-version = ['py38']
@@ -54,10 +42,3 @@ profile = "black"
 [tool.mypy]
 python_version = "3.8"
 files = ['src/']
-
-[[tool.mypy.overrides]]
-module = [
-  "pandas",
-  "bs4"
-]
-ignore_missing_imports = true
