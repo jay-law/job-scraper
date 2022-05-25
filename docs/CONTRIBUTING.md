@@ -177,6 +177,13 @@ $ poetry add mypy --dev
 $ mypy
 ```
 
+# Testing
+
+```bash
+# Run tests
+$ pytest
+```
+
 # Publishing
 
 ## Automatic

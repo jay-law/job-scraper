@@ -95,7 +95,7 @@ $ python3 -m exfill.extractor linkedin parse
 
 # Roadmap
 
-* [ ] Write unit tests
+* [x] Write unit tests
 * [ ] Improve secret handling
 * [x] Add packaging
 * [x] Move paths to config file
@@ -113,3 +113,4 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Migrate to `poetry` for virtual env, building, and publishing
 * [x] Replace os.path usage with pathlib
 * [x] Replace pandas export with csv export
+* [ ] Replace unittest with pytest
