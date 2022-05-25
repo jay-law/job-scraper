@@ -1,9 +1,9 @@
 import json
 import logging
-import os
 import re
 from datetime import datetime
 from math import ceil
+from pathlib import PurePath
 from time import sleep
 
 from bs4 import BeautifulSoup
@@ -32,10 +32,10 @@ class LinkedinScraper(Scraper):
 
     def browser_init(self) -> webdriver:
         logging.info("Initalizing browser")
+
         driver = webdriver.Firefox(
-            executable_path=os.path.dirname(os.path.dirname(__file__))
-            + "/"
-            + self.config.get("Paths", "gecko_driver"),
+            executable_path=PurePath(__file__).parent.parent
+            / self.config.get("Paths", "gecko_driver"),
             service_log_path=self.config.get("Paths", "gecko_log"),
         )
 
@@ -79,8 +79,8 @@ class LinkedinScraper(Scraper):
 
     def export_html(self, page_source):
         soup = BeautifulSoup(page_source, "html.parser")
-        output_file_prefix = os.path.join(
-            self.config.get("Scraper", "linkedin_out_dir"), "jobid_"
+        output_file_prefix = (
+            self.config.get("Scraper", "linkedin_out_dir") + "jobid_"
         )
 
         # Find jobid - it's easier with beautifulsoup
