@@ -111,3 +111,4 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Replace sys.exit calls with exceptions
 * [x] Update how the config object is accessed
 * [x] Migrate to `poetry` for virtual env, building, and publishing
+* [x] Replace os.path usage with pathlib
