@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exfill"
-version = "0.1.18"
+version = "0.1.19"
 description = "A small app to grab job postings from online job boards"
 authors = ["jay-law <jay-law@users.noreply.github.com>"]
 readme = "README.md"
@@ -9,7 +9,7 @@ repository = "https://github.com/jay-law/job-scraper"
 documentation = "https://github.com/jay-law/job-scraper"
 
 [tool.poetry.scripts]
-cli-script = "src.exfill.extractor:main"
+cli-script = "exfill.extractor:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -35,10 +35,10 @@ line-length = 79
 include = '\.pyi?$'
 
 [tool.isort]
-src_paths = ["src"]
+src_paths = ["exfill"]
 py_version = 38
 profile = "black"
 
 [tool.mypy]
 python_version = "3.8"
-files = ['src/']
+files = ['exfill/']
