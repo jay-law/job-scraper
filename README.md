@@ -32,7 +32,7 @@ Syntax should be as follows:
 ```json
 {
     "linkedin": {
-        "username": "jay-law@gmail.com",
+        "username": "jay-law@protonmail.com",
         "password": "password1"
     }
 }
@@ -54,10 +54,22 @@ The csv file provides a high-level overview of all the jobs returned during the 
 # Install with git
 $ git clone git@github.com:jay-law/job-scraper.git
 
-# Create and populate creds.json
+# Create and populate creds.json.  Bash only:
+cat <<EOF > creds.json
+{
+    "linkedin": {
+        "username": "jay-law@protonmail.com",
+        "password": "password1"
+    }
+}
+EOF
 
 # Activate virtual env
 $ poetry shell
+
+# Install dependencies
+$ poetry install            # all deps
+$ poetry install --no-dev   # don't install linters/formatters
 
 # Execute - Scrape linkedin
 $ python3 src/exfill/extractor.py linkedin scrape

@@ -20,9 +20,15 @@ $ git checkout -b BRANCH_NAME
 # Activate virtual env
 $ poetry shell
 
+# Install dependencies
+$ poetry install 
+
 ########################
 # make changes to code
 ########################
+
+# Update version
+$ poetry version patch
 
 # Check linting and formatting before commit
 $ pre-commit run --all-files
