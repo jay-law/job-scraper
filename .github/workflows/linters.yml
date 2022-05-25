@@ -19,6 +19,7 @@ jobs:
       - name: Run flake8
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
           flake8 src/
 
   isort:
