@@ -7,8 +7,9 @@ from math import ceil
 from time import sleep
 
 from bs4 import BeautifulSoup
-from scrapers.scraper_base import Scraper
 from selenium import webdriver
+
+from scrapers.scraper_base import Scraper
 
 
 class LinkedinScraper(Scraper):

@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 
 from bs4 import BeautifulSoup
 from pandas import DataFrame
+
 from parsers.parser_base import Parser
 
 

@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+
 from parsers.linkedin_parser import InvalidFileName, LinkedinParser
 from tests.main import BaseTest
 
