@@ -45,6 +45,6 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         artifacts: "dist/*"
-        tag: $REL_VER
+        tag: ${{ env.REL_VER }}
 
 
