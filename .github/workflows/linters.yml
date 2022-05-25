@@ -18,8 +18,7 @@ jobs:
           python-version: 3.8
       - name: Run flake8
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          poetry install
+          python -m pip install --upgrade flake8
           flake8 src/
 
   isort:
