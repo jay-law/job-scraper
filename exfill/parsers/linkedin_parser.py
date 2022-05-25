@@ -1,5 +1,6 @@
 """Parser module will process and aggregate job posting files.
 """
+import csv
 import logging
 import re
 from configparser import NoOptionError, NoSectionError
@@ -7,7 +8,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from pandas import DataFrame
 
 from parsers.parser_base import Parser
 
@@ -75,7 +75,6 @@ class LinkedinParser(Parser):
         try:
             self.output_file = config.get("Parser", "output_file")
             self.output_file_errors = config.get("Parser", "output_file_err")
-            # self.input_dir = config.get("Parser", "input_dir")
             self.input_dir = Path(
                 Path.cwd() / config.get("Parser", "input_dir")
             )
@@ -88,7 +87,12 @@ class LinkedinParser(Parser):
     def parse_export(self) -> None:
         """Export all postings to CSV file"""
         logging.info(f"Exporting to {self.output_file}")
-        DataFrame(self.postings).to_csv(self.output_file, index=False)
+        with open(self.output_file, "w") as f:
+            writer = csv.writer(f, delimiter="|")
+
+            writer.writerow(self.postings[0].keys())  # headers
+            for posting in self.postings:
+                writer.writerow(posting.values())
 
     # parser
     def parse_postings(self) -> None:
