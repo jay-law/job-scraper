@@ -3,7 +3,6 @@ each posting, then combine all of the information into a single useable
 csv file.
 """
 import logging
-import os
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 from pathlib import Path, PurePath
@@ -53,9 +52,8 @@ def main() -> None:
     create_dirs(config)
 
     # Initialize logging
-    log_file_name = config.get("Paths", "app_log")
     logging.basicConfig(
-        filename=log_file_name,
+        filename=config.get("Paths", "app_log"),
         level=logging.INFO,  # level=logging.INFO should be default
         format="[%(asctime)s] [%(levelname)s] - %(message)s",
         filemode="w+",
