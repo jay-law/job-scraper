@@ -72,10 +72,10 @@ $ poetry install            # all deps
 $ poetry install --no-dev   # don't install linters/formatters
 
 # Execute - Scrape linkedin
-$ python3 src/exfill/extractor.py linkedin scrape
+$ python3 exfill/extractor.py linkedin scrape
 
 # Execute - Parse linkedin
-$ python3 src/exfill/extractor.py linkedin parse
+$ python3 exfill/extractor.py linkedin parse
 ```
 
 ## Use as Module
