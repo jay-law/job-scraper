@@ -35,10 +35,10 @@ line-length = 79
 include = '\.pyi?$'
 
 [tool.isort]
-src_paths = ["src"]
+src_paths = ["exfill"]
 py_version = 38
 profile = "black"
 
 [tool.mypy]
 python_version = "3.8"
-files = ['src/']
+files = ['exfill/']
