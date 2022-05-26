@@ -180,21 +180,16 @@ class LinkedinParser(Parser):
     def load_posting_workplace_type(self, soup: BeautifulSoup) -> str:
 
         try:
-            assert type(soup) is BeautifulSoup
-
-            # workplace_type. looking for remote (f_WT=2 in url)
+            # looking for remote (f_WT=2 in url)
             workplace_type = soup.find(
                 class_="jobs-unified-top-card__workplace-type"
             )
 
             if workplace_type is None:
-                raise EmptySoup("workplace_type is missing")
+                return "missing"
 
-        except EmptySoup as e:
+        except Exception as e:
             logging.error(f"Err msg - {e}")
-            return "missing"
-        except AssertionError:
-            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
             return "error"
         else:
             return workplace_type.text.strip()

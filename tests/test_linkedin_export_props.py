@@ -30,20 +30,52 @@ def test_load_posting_jobid(create_parser):
     assert exc_info.type == InvalidFileName
 
 
-# def test_load_posting_url:
+def test_load_posting_url(create_parser):
+    parser = create_parser
+    url = parser.load_posting_url("3080721373")
+
+    assert "https://www.linkedin.com/jobs/view/3080721373" == url
+    assert isinstance(url, str)
+
+    with pytest.raises(TypeError):
+        parser.load_posting_url()
 
 
 def test_load_posting_title(create_parser):
     parser = create_parser
-
     good_sip = BeautifulSoup(
         ('<h2 class="t-24 t-bold">' "Senior DevOps Engineer" "</h2>"),
         "html.parser",
     )
-
     title = parser.load_posting_title(good_sip)
+
     assert "Senior DevOps Engineer" == title
     assert isinstance(title, str)
 
+    with pytest.raises(TypeError):
+        parser.load_posting_title()
+
     assert "missing" == parser.load_posting_title(empty_sip)
     assert "error" == parser.load_posting_title(bad_sip)
+
+
+def test_load_posting_workplace_type(create_parser):
+    parser = create_parser
+    good_sip = BeautifulSoup(
+        (
+            '<span class="jobs-unified-top-card__workplace-type">'
+            "Remote"
+            "</span>"
+        ),
+        "html.parser",
+    )
+    workplace_type = parser.load_posting_workplace_type(good_sip)
+
+    assert "Remote" == workplace_type
+    assert isinstance(workplace_type, str)
+
+    with pytest.raises(TypeError):
+        parser.load_posting_workplace_type()
+
+    assert "missing" == parser.load_posting_workplace_type(empty_sip)
+    assert "error" == parser.load_posting_workplace_type(bad_sip)
