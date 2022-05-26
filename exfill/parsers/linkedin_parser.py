@@ -165,17 +165,13 @@ class LinkedinParser(Parser):
     def load_posting_title(self, soup: BeautifulSoup) -> str:
 
         try:
-            assert type(soup) is BeautifulSoup
             title = soup.find(class_="t-24")
 
             if title is None:
-                raise EmptySoup("workplace_type is missing")
+                return "missing"
 
-        except EmptySoup as e:
+        except Exception as e:
             logging.error(f"Err msg - {e}")
-            return "missing"
-        except AssertionError:
-            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
             return "error"
         else:
             return title.text.strip()
