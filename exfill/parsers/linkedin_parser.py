@@ -136,14 +136,12 @@ class LinkedinParser(Parser):
 
     # soup - config prop
     def load_posting_soup(self, input_file: Path) -> BeautifulSoup:
-
         try:
             with open(input_file, mode="r", encoding="UTF-8") as f:
                 soup = BeautifulSoup(f, "html.parser")
         except FileNotFoundError as e:
-            raise InvalidFileName(e) from None
-        except OSError as e:
-            raise InvalidFileName(e) from None
+            logging.error(f"Err msg - {e}")
+            raise e
         else:
             return soup
 

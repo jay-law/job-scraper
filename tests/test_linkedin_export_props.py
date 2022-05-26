@@ -43,8 +43,6 @@ empty_sip = BeautifulSoup("", "html.parser")  # returns 'missing'
 
 
 def test_load_posting_jobid(create_parser):
-    # config = load_config
-    # parser = LinkedinParser(config)
     parser = create_parser
 
     good_file = "jobid_3080721373_20220516_180204.html"
