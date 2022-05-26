@@ -165,16 +165,16 @@ class LinkedinParser(Parser):
     def load_posting_title(self, soup: BeautifulSoup) -> str:
 
         try:
-            title = soup.find(class_="t-24")
-
-            if title is None:
-                return "missing"
+            title = soup.find(class_="t-24").text.strip()
 
         except Exception as e:
             logging.error(f"Err msg - {e}")
+
+            if isinstance(e, AttributeError):
+                return "missing"
             return "error"
         else:
-            return title.text.strip()
+            return title
 
     # workplace_type - export prop
     def load_posting_workplace_type(self, soup: BeautifulSoup) -> str:
@@ -218,20 +218,17 @@ class LinkedinParser(Parser):
     def load_posting_company_url(self, soup: BeautifulSoup) -> str:
 
         try:
-            assert type(soup) is BeautifulSoup
             company_url = soup.find(
                 "span", class_="jobs-unified-top-card__company-name"
             ).find("a")["href"]
 
-        # AttributeError can occur on second find()
-        except AttributeError as e:
+        except Exception as e:
             logging.error(f"Err msg - {e}")
-            return "missing"
-        except AssertionError:
-            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+            if isinstance(e, (AttributeError, KeyError)):
+                return "missing"
             return "error"
         else:
-            return company_url.strip()
+            return company_url
 
     # company_details - export props
     def load_posting_company_details(self, soup: BeautifulSoup) -> tuple:
