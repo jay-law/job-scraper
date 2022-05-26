@@ -27,9 +27,6 @@ class LinkedinScraper(Scraper):
         logging.info("Closing browser")
         self.driver.close()
 
-    def export(self):
-        print("exporting")
-
     def browser_init(self) -> webdriver:
         logging.info("Initalizing browser")
 
@@ -80,7 +77,7 @@ class LinkedinScraper(Scraper):
     def export_html(self, page_source):
         soup = BeautifulSoup(page_source, "html.parser")
         output_file_prefix = (
-            self.config.get("Scraper", "linkedin_out_dir") + "jobid_"
+            self.config.get("Scraper", "linkedin_out_dir") + "/jobid_"
         )
 
         # Find jobid - it's easier with beautifulsoup
