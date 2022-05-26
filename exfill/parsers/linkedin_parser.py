@@ -33,7 +33,7 @@ class EmptySoup(Exception):
 class Posting:
     # config props
     input_file_name: str
-    input_file: str = ""
+    input_file: Path = Path()
     soup: BeautifulSoup = field(default=BeautifulSoup(), repr=False)
 
     # export props
@@ -130,12 +130,12 @@ class LinkedinParser(Parser):
 
     # input_file - config prop
     def load_posting_input_file(
-        self, input_dir: str, input_file_name: str
-    ) -> str:
+        self, input_dir: Path, input_file_name: Path
+    ) -> Path:
         return Path(input_dir / input_file_name)
 
     # soup - config prop
-    def load_posting_soup(self, input_file: str) -> BeautifulSoup:
+    def load_posting_soup(self, input_file: Path) -> BeautifulSoup:
 
         try:
             with open(input_file, mode="r", encoding="UTF-8") as f:
