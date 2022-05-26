@@ -183,35 +183,36 @@ class LinkedinParser(Parser):
             # looking for remote (f_WT=2 in url)
             workplace_type = soup.find(
                 class_="jobs-unified-top-card__workplace-type"
-            )
-
-            if workplace_type is None:
-                return "missing"
+            ).text.strip()
 
         except Exception as e:
             logging.error(f"Err msg - {e}")
+
+            if isinstance(e, AttributeError):
+                return "missing"
             return "error"
         else:
-            return workplace_type.text.strip()
+            return workplace_type
 
     # company_name - export prop
     def load_posting_company_name(self, soup: BeautifulSoup) -> str:
 
         try:
-            assert type(soup) is BeautifulSoup
-            company_name = soup.find(
-                "span", class_="jobs-unified-top-card__company-name"
-            ).find("a")
+            company_name = (
+                soup.find("span", class_="jobs-unified-top-card__company-name")
+                .find("a")
+                .text.strip()
+            )
 
-        # AttributeError can occur on second find()
-        except AttributeError as e:
+        except Exception as e:
             logging.error(f"Err msg - {e}")
-            return "missing"
-        except AssertionError:
-            logging.error(f"Soup should be BeautifulSoup, not {type(soup)}")
+
+            # AttributeError can occur on second find()
+            if isinstance(e, AttributeError):
+                return "missing"
             return "error"
         else:
-            return company_name.text.strip()
+            return company_name
 
     # company_url - export prop
     def load_posting_company_url(self, soup: BeautifulSoup) -> str:

@@ -79,3 +79,35 @@ def test_load_posting_workplace_type(create_parser):
 
     assert "missing" == parser.load_posting_workplace_type(empty_sip)
     assert "error" == parser.load_posting_workplace_type(bad_sip)
+
+
+def test_load_posting_company_name(create_parser):
+    parser = create_parser
+    good_sip = BeautifulSoup(
+        (
+            '<span class="jobs-unified-top-card__company-name">'
+            '<a class="ember-view t-black t-normal"'
+            'href="/company/sap/life/" id="ember146">'
+            "SAP"
+            "</a>"
+            "</span>"
+        ),
+        "html.parser",
+    )
+    company_name = parser.load_posting_company_name(good_sip)
+
+    assert "SAP" == company_name
+    assert isinstance(company_name, str)
+
+    with pytest.raises(TypeError):
+        parser.load_posting_company_name()
+    parser.load_posting_company_name(empty_sip)
+    assert "missing" == parser.load_posting_company_name(empty_sip)
+    assert "error" == parser.load_posting_company_name(bad_sip)
+
+    partial_sip = BeautifulSoup(
+        ('<span class="jobs-unified-top-card__company-name">' "</span>"),
+        "html.parser",
+    )
+    assert "missing" == parser.load_posting_company_name(partial_sip)
+    print("here - ", parser.load_posting_company_name(partial_sip))
