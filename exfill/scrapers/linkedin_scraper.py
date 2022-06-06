@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from configparser import NoOptionError, NoSectionError
 from datetime import datetime
 from math import ceil
 from pathlib import PurePath
@@ -14,7 +15,20 @@ from scrapers.scraper_base import Scraper
 
 class LinkedinScraper(Scraper):
     def __init__(self, config):
-        self.config = config
+
+        self.driver: webdriver
+
+        try:
+            self.gecko_driver = PurePath(__file__).parent.parent / config.get(
+                "Paths", "gecko_driver"
+            )
+            self.gecko_log = config.get("Paths", "gecko_log")
+            self.creds_file = config.get("Paths", "creds")
+            self.login_url = config.get("URLs", "linkedin_login")
+            self.output_dir = config.get("Scraper", "linkedin_out_dir")
+        except (NoSectionError, NoOptionError) as e:
+            logging.error(f"Err msg - {e}")
+            raise e
 
     def scrape_postings(self, postings_to_scrape: int):
         self.driver = self.browser_init()
@@ -31,9 +45,8 @@ class LinkedinScraper(Scraper):
         logging.info("Initalizing browser")
 
         driver = webdriver.Firefox(
-            executable_path=PurePath(__file__).parent.parent
-            / self.config.get("Paths", "gecko_driver"),
-            service_log_path=self.config.get("Paths", "gecko_log"),
+            executable_path=self.gecko_driver,
+            service_log_path=self.gecko_log,
         )
 
         driver.implicitly_wait(10)
@@ -44,12 +57,10 @@ class LinkedinScraper(Scraper):
     def browser_login(self) -> None:
 
         logging.info("Navigating to login page")
-        self.driver.get(self.config.get("URLs", "linkedin_login"))
+        self.driver.get(self.login_url)
 
         logging.info("Reading in creds")
-        with open(
-            self.config.get("Paths", "creds"), encoding="UTF-8"
-        ) as creds:
+        with open(self.creds_file, encoding="UTF-8") as creds:
             cred_dict = json.load(creds)["linkedin"]
         logging.info(f"User name - {cred_dict['username']}")
 
@@ -76,9 +87,7 @@ class LinkedinScraper(Scraper):
 
     def export_html(self, page_source):
         soup = BeautifulSoup(page_source, "html.parser")
-        output_file_prefix = (
-            self.config.get("Scraper", "linkedin_out_dir") + "/jobid_"
-        )
+        output_file_prefix = self.output_dir + "/jobid_"
 
         # Find jobid - it's easier with beautifulsoup
         # Example:
