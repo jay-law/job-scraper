@@ -8,7 +8,7 @@ from configparser import ConfigParser, ExtendedInterpolation
 from pathlib import Path, PurePath
 
 from parsers.parser_factory import ParserFactory
-from scrapers.factory import ScraperFactory
+from scrapers.scraper_factory import ScraperFactory
 
 
 class ConfigFileMissing(Exception):
