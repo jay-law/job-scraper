@@ -9,6 +9,7 @@ from time import sleep
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
 
 from scrapers.scraper_base import Scraper
 
@@ -44,10 +45,8 @@ class LinkedinScraper(Scraper):
     def browser_init(self) -> webdriver:
         logging.info("Initalizing browser")
 
-        driver = webdriver.Firefox(
-            executable_path=self.gecko_driver,
-            service_log_path=self.gecko_log,
-        )
+        s = Service(executable_path=self.gecko_driver, log_path=self.gecko_log)
+        driver = webdriver.Firefox(service=s)
 
         driver.implicitly_wait(10)
         driver.set_window_size(1800, 600)
