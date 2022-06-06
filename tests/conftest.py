@@ -1,5 +1,4 @@
 from configparser import ConfigParser, ExtendedInterpolation
-from pathlib import Path
 
 import pytest
 
@@ -9,8 +8,7 @@ from exfill.parsers.linkedin_parser import LinkedinParser
 @pytest.fixture
 def load_config():
     config = ConfigParser(interpolation=ExtendedInterpolation())
-    # config_file = Path.cwd() / "exfill/config.ini"
-    # config.read(config_file)
+
     config.add_section("Directories")
     config.set("Directories", "data_dir", "data")
     config.set("Directories", "log_dir", "logs")
@@ -40,9 +38,7 @@ def load_config():
 
 
 @pytest.fixture
-def create_parser():
-    config_file = Path.cwd() / "exfill/config.ini"
-    config = ConfigParser(interpolation=ExtendedInterpolation())
-    config.read(config_file)
+def create_parser(load_config):
+    config = load_config
 
     return LinkedinParser(config)

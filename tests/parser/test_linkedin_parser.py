@@ -21,6 +21,14 @@ def test_parser_constructor_exceptions(load_config):
     with pytest.raises(NoOptionError):
         LinkedinParser(config)
 
+    config.remove_option("Parser", "output_file_err")
+    with pytest.raises(NoOptionError):
+        LinkedinParser(config)
+
+    config.remove_option("Parser", "input_dir")
+    with pytest.raises(NoOptionError):
+        LinkedinParser(config)
+
     config.remove_section("Parser")
     with pytest.raises(NoSectionError):
         LinkedinParser(config)
