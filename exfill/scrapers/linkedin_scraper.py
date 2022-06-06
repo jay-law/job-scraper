@@ -34,7 +34,8 @@ class LinkedinScraper(Scraper):
 
     def scrape_postings(self, postings_to_scrape: int):
         self.driver = self.browser_init()
-        self.browser_login()
+        username, password = self.load_creds(self.creds_file)
+        self.browser_login(username, password)
 
         for page in range(ceil(postings_to_scrape / 25)):
             self.load_search_page(page)
@@ -54,14 +55,11 @@ class LinkedinScraper(Scraper):
 
         return driver
 
-    def browser_login(self) -> None:
-
-        logging.info("Navigating to login page")
-        self.driver.get(self.login_url)
+    def load_creds(self, creds_file) -> tuple:
 
         logging.info("Reading in creds")
         try:
-            with open(self.creds_file, encoding="UTF-8") as creds:
+            with open(creds_file, encoding="UTF-8") as creds:
                 cred_dict = json.load(creds)["linkedin"]
                 username = cred_dict["username"]
                 password = cred_dict["password"]
@@ -69,6 +67,13 @@ class LinkedinScraper(Scraper):
             logging.error(f"Err msg - {e}")
             self.driver.close()
             raise e
+
+        return (username, password)
+
+    def browser_login(self, username, password) -> None:
+
+        logging.info("Navigating to login page")
+        self.driver.get(self.login_url)
 
         logging.info(f"User name - {username}")
 
