@@ -9,6 +9,7 @@ from time import sleep
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.service import Service
 
 from scrapers.scraper_base import Scraper
@@ -17,7 +18,7 @@ from scrapers.scraper_base import Scraper
 class LinkedinScraper(Scraper):
     def __init__(self, config):
 
-        self.driver: webdriver
+        # self.driver: webdriver
 
         try:
             self.gecko_driver = PurePath(__file__).parent.parent / config.get(
@@ -59,20 +60,29 @@ class LinkedinScraper(Scraper):
         self.driver.get(self.login_url)
 
         logging.info("Reading in creds")
-        with open(self.creds_file, encoding="UTF-8") as creds:
-            cred_dict = json.load(creds)["linkedin"]
-        logging.info(f"User name - {cred_dict['username']}")
+        try:
+            with open(self.creds_file, encoding="UTF-8") as creds:
+                cred_dict = json.load(creds)["linkedin"]
+                username = cred_dict["username"]
+                password = cred_dict["password"]
+        except (FileNotFoundError, KeyError) as e:
+            logging.error(f"Err msg - {e}")
+            self.driver.close()
+            raise e
+
+        logging.info(f"User name - {username}")
 
         logging.info("Signing in")
-        self.driver.find_element_by_id("username").send_keys(
-            cred_dict["username"]
-        )
-        self.driver.find_element_by_id("password").send_keys(
-            cred_dict["password"]
-        )
-        self.driver.find_element_by_xpath(
-            "//button[@aria-label='Sign in']"
-        ).click()
+        try:
+            self.driver.find_element_by_id("username").send_keys(username)
+            self.driver.find_element_by_id("password").send_keys(password)
+            self.driver.find_element_by_xpath(
+                "//button[@aria-label='Sign in']"
+            ).click()
+        except NoSuchElementException as e:
+            logging.error(f"Err msg - {e}")
+            self.driver.close()
+            raise e
 
     def load_search_page(self, postings_scraped_total: int) -> None:
         sleep(2)
