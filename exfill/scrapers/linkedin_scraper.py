@@ -7,7 +7,6 @@ from math import ceil
 from pathlib import PurePath
 from time import sleep
 
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -33,6 +32,7 @@ class LinkedinScraper(Scraper):
             self.creds_file = config.get("Paths", "creds")
             self.login_url = config.get("URLs", "linkedin_login")
             self.login_success = config.get("URLs", "linkedin_login_success")
+            self.search_url = config.get("URLs", "linkedin_search")
             self.output_dir = config.get("Scraper", "linkedin_out_dir")
         except (NoSectionError, NoOptionError) as e:
             logging.error(f"Err msg - {e}")
@@ -44,8 +44,21 @@ class LinkedinScraper(Scraper):
         self.browser_login(username, password)
 
         for page in range(ceil(postings_to_scrape / 25)):
-            self.load_search_page(page)
-            self.scrape_page()
+            self.load_search_page(self.search_url, page)
+            sleep(2)  # server might reject request without wait
+
+            for i in range(25):  # 25 postings per page
+                # About 7 are loaded initially.  More are loaded
+                # dynamically as the user scrolls down
+                postings = self.update_postings()
+
+                logging.info(f"Scrolling to - {i}")
+                self.select_next_posting(postings[i])
+
+                jobid = self.set_jobid(postings[i].get_attribute("href"))
+
+                sleep(2)  # helps with missing content
+                self.export_html(jobid, self.driver.page_source)
 
         logging.info("Closing browser")
         self.driver.close()
@@ -99,46 +112,24 @@ class LinkedinScraper(Scraper):
         if self.login_success not in self.driver.current_url:
             raise InvalidCreds
 
-    def load_search_page(self, postings_scraped_total: int) -> None:
+    def load_search_page(
+        self, search_url, postings_scraped_total: int
+    ) -> None:
         sleep(2)
-        url = (
-            "https://www.linkedin.com/jobs/search"
-            + "?keywords=devops&location=United%20States&f_WT=2&&start="
-            + str(postings_scraped_total)
-        )
+        url = search_url + str(postings_scraped_total)
         logging.info(f"Loading url: {url}")
         self.driver.get(url)
 
-    def export_html(self, page_source):
-        soup = BeautifulSoup(page_source, "html.parser")
-        output_file_prefix = self.output_dir + "/jobid_"
+    def select_next_posting(self, posting) -> None:
 
-        # Find jobid - it's easier with beautifulsoup
-        # Example:
-        # <a ... href="/jobs/view/2963302086/?alternateChannel...">
-        logging.info("Finding Job ID")
-        posting_details = soup.find(class_="job-view-layout")
-        anchor_link = posting_details.find("a")
-        jobid_search = re.search(r"view/(\d*)/", anchor_link["href"])
-        jobid = jobid_search.group(1)
-
-        # File name syntax:
-        # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
-        # Example:
-        # jobid_2886320758_20220322_120555.html
-        output_file = (
-            output_file_prefix
-            + jobid
-            + "_"
-            + datetime.now().strftime("%Y%m%d_%H%M%S")
-            + ".html"
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView(true);",
+            posting,
         )
 
-        logging.info(f"Exporting jobid {jobid} to {output_file}")
-        with open(output_file, "w+", encoding="UTF-8") as file:
-            file.write(posting_details.prettify())
+        posting.click()
 
-    def update_anchor_list(self):
+    def update_postings(self):
         # Create a list of each card (list of anchor tags).
         # Example card below:
         # <a href="/jobs/view/..." id="ember310" class="disabled ember-view
@@ -146,22 +137,27 @@ class LinkedinScraper(Scraper):
         logging.info("Updating card anchor list")
         return self.driver.find_elements_by_class_name("job-card-list__title")
 
-    def scrape_page(self) -> None:
-        sleep(2)
-        card_anchor_list = self.update_anchor_list()
+    def set_jobid(self, href: str) -> str:
+        # Example:
+        # <a ... href="/jobs/view/2963302086/?alternateChannel...">
+        jobid = re.search(r"view/(\d*)/", href).group(1)  # type: ignore
+        # a = jobid.group(1)
+        return jobid
 
-        for i in range(25):
-            logging.info(f"Scrolling to - {i}")
-            self.driver.execute_script(
-                "arguments[0].scrollIntoView(true);",
-                card_anchor_list[i],
-            )
-            logging.info(f"Clicking on {i}")
-            card_anchor_list[i].click()
-            sleep(2)  # hopefully helps with missing content
+    def export_html(self, jobid: str, page_source) -> None:
+        # File name syntax:
+        # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
+        # Example:
+        # jobid_2886320758_20220322_120555.html
+        output_file = (
+            self.output_dir
+            + "/jobid_"
+            + jobid
+            + "_"
+            + datetime.now().strftime("%Y%m%d_%H%M%S")
+            + ".html"
+        )
 
-            # About 7 are loaded initially.  More are loaded
-            # dynamically as the user scrolls down
-            card_anchor_list = self.update_anchor_list()
-
-            self.export_html(self.driver.page_source)
+        logging.info(f"Exporting jobid {jobid} to {output_file}")
+        with open(output_file, "w+", encoding="UTF-8") as f:
+            f.write(page_source)

@@ -32,9 +32,14 @@ def load_config():
     config.set("Scraper", "linkedin_out_dir", "${Directories:html_dir}")
 
     config.add_section("URLs")
-    config.set("URLs", "linkedin_login", "https://www.linkedin.com/login")
+    config.set("URLs", "linkedin_base", "https://www.linkedin.com/")
+    config.set("URLs", "linkedin_login", "${linkedin_base}/login")
+    config.set("URLs", "linkedin_login_success", "${linkedin_base}/feed")
     config.set(
-        "URLs", "linkedin_login_success", "https://www.linkedin.com/feed"
+        "URLs",
+        "linkedin_search",
+        "${linkedin_base}/jobs/search/?keywords=devops"
+        + "&location=United%20States&f_WT=2&&start=",
     )
 
     return config
