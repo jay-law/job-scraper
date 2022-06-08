@@ -1,8 +1,10 @@
 from configparser import NoOptionError, NoSectionError
 from json import JSONDecodeError
+from pathlib import PurePath
 
 import pytest
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 
@@ -36,15 +38,36 @@ def test_scraper_constructor_exceptions_sections(load_config):
         LinkedinScraper(config)
 
 
-def test_browser_init(load_config):
-
+def test_browser_init(load_config, logs_dir):
     config = load_config
     scraper = LinkedinScraper(config)
-    scraper.driver = scraper.browser_init()
 
-    assert isinstance(scraper.driver, webdriver.firefox.webdriver.WebDriver)
+    gecko_driver = (
+        PurePath(__file__).parent.parent.parent
+        / "exfill"
+        / config.get("Paths", "gecko_driver")
+    )
+    gecko_log = logs_dir / "geckodriver.log"
 
-    scraper.driver.close()
+    with scraper.browser_init(gecko_driver, gecko_log) as driver:
+        assert isinstance(driver, webdriver.firefox.webdriver.WebDriver)
+        assert gecko_log.exists()
+
+
+def test_browser_init_exceptions(load_config, logs_dir):
+    config = load_config
+    scraper = LinkedinScraper(config)
+
+    config.set("Paths", "gecko_driver", "support/geckodriver_badname")
+    gecko_driver = (
+        PurePath(__file__).parent.parent.parent
+        / "exfill"
+        / config.get("Paths", "gecko_driver")
+    )
+    gecko_log = logs_dir / "geckodriver.log"
+
+    with pytest.raises(WebDriverException):
+        scraper.browser_init(gecko_driver, gecko_log)
 
 
 def test_load_creds(tmpdir, load_config):
@@ -101,7 +124,7 @@ def test_load_creds_exceptions(tmpdir, load_config):
 
 
 def test_browser_login_exception(load_config):
-
+    return 1
     config = load_config
     scraper = LinkedinScraper(config)
     scraper.driver = scraper.browser_init()

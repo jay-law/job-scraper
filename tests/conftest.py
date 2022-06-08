@@ -50,3 +50,11 @@ def create_parser(load_config):
     config = load_config
 
     return LinkedinParser(config)
+
+
+@pytest.fixture
+def logs_dir(tmp_path):
+    dir = tmp_path / "logs"
+    dir.mkdir()
+
+    return dir

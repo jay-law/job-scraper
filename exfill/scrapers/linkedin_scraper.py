@@ -39,7 +39,7 @@ class LinkedinScraper(Scraper):
             raise e
 
     def scrape_postings(self, postings_to_scrape: int):
-        self.driver = self.browser_init()
+        self.driver = self.browser_init(self.gecko_driver, self.gecko_log)
         username, password = self.load_creds(self.creds_file)
         self.browser_login(username, password)
 
@@ -47,6 +47,7 @@ class LinkedinScraper(Scraper):
             self.load_search_page(self.search_url, page)
             sleep(2)  # server might reject request without wait
 
+            logging.info("Starting to scrape")
             for i in range(25):  # 25 postings per page
                 # About 7 are loaded initially.  More are loaded
                 # dynamically as the user scrolls down
@@ -66,11 +67,15 @@ class LinkedinScraper(Scraper):
         logging.info("Closing browser")
         self.driver.close()
 
-    def browser_init(self) -> webdriver:
-        logging.info("Initalizing browser")
+    def browser_init(self, gecko_driver, gecko_log) -> webdriver:
 
-        s = Service(executable_path=self.gecko_driver, log_path=self.gecko_log)
-        driver = webdriver.Firefox(service=s)
+        logging.info("Initalizing browser")
+        try:
+            s = Service(executable_path=gecko_driver, log_path=gecko_log)
+            driver = webdriver.Firefox(service=s)
+        except Exception as e:
+            logging.error(f"Err msg - {e}")
+            raise e
 
         driver.implicitly_wait(10)
         driver.set_window_size(1800, 600)
