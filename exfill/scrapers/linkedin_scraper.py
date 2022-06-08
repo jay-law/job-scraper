@@ -3,6 +3,7 @@ import logging
 import re
 from configparser import NoOptionError, NoSectionError
 from datetime import datetime
+from json import JSONDecodeError
 from math import ceil
 from pathlib import PurePath
 from time import sleep
@@ -22,8 +23,6 @@ class InvalidCreds(Exception):
 
 class LinkedinScraper(Scraper):
     def __init__(self, config):
-
-        # self.driver: webdriver
 
         try:
             self.gecko_driver = PurePath(__file__).parent.parent / config.get(
@@ -86,7 +85,7 @@ class LinkedinScraper(Scraper):
                 cred_dict = json.load(creds)["linkedin"]
                 username = cred_dict["username"]
                 password = cred_dict["password"]
-        except (FileNotFoundError, KeyError) as e:
+        except (FileNotFoundError, KeyError, JSONDecodeError) as e:
             logging.error(f"Err msg - {e}")
             self.driver.close()
             raise e
