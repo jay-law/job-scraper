@@ -67,21 +67,16 @@ def test_set_jobid(load_config):
     assert scraper.set_jobid("") == "ERROR"
 
 
-def test_export_html(load_config):
-    return 1
+def test_export_html(tmpdir, load_config):
     config = load_config
     scraper = LinkedinScraper(config)
-    scraper.driver = scraper.browser_init()
 
-    page_source = (
-        '<a class="ember-view" data-control-id="cF05IGrZxG7dWLzdlABjiw==" '
-        'href="/jobs/view/2961660399/?alternateChannel=search&amp;'
-        "refId=WIZfyvoyHKMGSZBKAJsncw%3D%3D&amp;"
-        "trackingId=cF05IGrZxG7dWLzdlABjiw%3D%3D&amp;"
-        'trk=d_flagship3_search_srp_jobs" id="ember146">'
-        '<h2 class="t-16 t-black t-bold truncate">'
-        "DevOps Engineer"
-        "</h2>"
-        "</a>"
-    )
-    scraper.export_html(page_source)
+    out_dir = tmpdir.mkdir("export_testing")
+
+    scraper.export_html(out_dir, "123456", "<h1>hello world</h1>")
+
+    out_file = out_dir.listdir()[0]
+
+    assert out_file.read() == "<h1>hello world</h1>"
+
+    assert "jobid_123456" in str(out_file)

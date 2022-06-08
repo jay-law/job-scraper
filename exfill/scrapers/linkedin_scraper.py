@@ -60,7 +60,9 @@ class LinkedinScraper(Scraper):
                 jobid = self.set_jobid(posting.get_attribute("href"))
 
                 sleep(2)  # helps with missing content
-                self.export_html(jobid, self.driver.page_source)
+                self.export_html(
+                    self.output_dir, jobid, self.driver.page_source
+                )
 
         logging.info("Closing browser")
         self.driver.close()
@@ -151,13 +153,13 @@ class LinkedinScraper(Scraper):
         else:
             return jobid  # type: ignore
 
-    def export_html(self, jobid: str, page_source) -> None:
+    def export_html(self, output_dir, jobid: str, page_source) -> None:
         # File name syntax:
         # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
         # Example:
         # jobid_2886320758_20220322_120555.html
         output_file = (
-            self.output_dir
+            output_dir
             + "/jobid_"
             + jobid
             + "_"
