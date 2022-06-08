@@ -11,6 +11,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.remote.webelement import WebElement
 
 from scrapers.scraper_base import Scraper
 
@@ -50,12 +51,13 @@ class LinkedinScraper(Scraper):
             for i in range(25):  # 25 postings per page
                 # About 7 are loaded initially.  More are loaded
                 # dynamically as the user scrolls down
-                postings = self.update_postings()
+                postings: list = self.update_postings()
+                posting: WebElement = postings[i]
 
                 logging.info(f"Scrolling to - {i}")
-                self.select_next_posting(postings[i])
+                self.click_posting(posting)
 
-                jobid = self.set_jobid(postings[i].get_attribute("href"))
+                jobid = self.set_jobid(posting.get_attribute("href"))
 
                 sleep(2)  # helps with missing content
                 self.export_html(jobid, self.driver.page_source)
@@ -115,21 +117,21 @@ class LinkedinScraper(Scraper):
     def load_search_page(
         self, search_url, postings_scraped_total: int
     ) -> None:
+
         sleep(2)
         url = search_url + str(postings_scraped_total)
         logging.info(f"Loading url: {url}")
         self.driver.get(url)
 
-    def select_next_posting(self, posting) -> None:
+    def click_posting(self, posting: WebElement) -> None:
 
         self.driver.execute_script(
             "arguments[0].scrollIntoView(true);",
             posting,
         )
-
         posting.click()
 
-    def update_postings(self):
+    def update_postings(self) -> list:
         # Create a list of each card (list of anchor tags).
         # Example card below:
         # <a href="/jobs/view/..." id="ember310" class="disabled ember-view
@@ -140,9 +142,14 @@ class LinkedinScraper(Scraper):
     def set_jobid(self, href: str) -> str:
         # Example:
         # <a ... href="/jobs/view/2963302086/?alternateChannel...">
-        jobid = re.search(r"view/(\d*)/", href).group(1)  # type: ignore
-        # a = jobid.group(1)
-        return jobid
+        try:
+            jobid = re.search(r"view/(\d*)/", href)
+            jobid = jobid.group(1)  # type: ignore
+        except Exception as e:
+            logging.error(f"Err msg - {e}")
+            return "ERROR"
+        else:
+            return jobid  # type: ignore
 
     def export_html(self, jobid: str, page_source) -> None:
         # File name syntax:
