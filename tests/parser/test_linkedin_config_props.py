@@ -24,9 +24,10 @@ def test_load_posting_input_file(create_parser):
 def test_load_posting_soup(create_parser):
     parser = create_parser
 
+    # fix later
     input_file = (
         Path.cwd().__str__()
-        + "/data/html/jobid_2961660399_20220323_173230.html"
+        + "/data/html/jobid_3080882196_20220608_131434.html"
     )
 
     soup = parser.load_posting_soup(input_file)

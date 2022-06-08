@@ -56,7 +56,19 @@ def test_browser_login_exception(load_config):
     scraper.driver.close()
 
 
+def test_set_jobid(load_config):
+    config = load_config
+    scraper = LinkedinScraper(config)
+
+    assert scraper.set_jobid("/view/123456/") == "123456"
+
+    assert scraper.set_jobid("/123456/") == "ERROR"
+
+    assert scraper.set_jobid("") == "ERROR"
+
+
 def test_export_html(load_config):
+    return 1
     config = load_config
     scraper = LinkedinScraper(config)
     scraper.driver = scraper.browser_init()
@@ -73,9 +85,3 @@ def test_export_html(load_config):
         "</a>"
     )
     scraper.export_html(page_source)
-
-    # jobid2 = self.driver.find_element(By.XPATH, "//a[@data-control-id]")
-
-    # print("------------------")
-    # print(jobid2.href)
-    # print(jobid2.get_attribute("href"))
