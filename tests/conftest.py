@@ -33,6 +33,9 @@ def load_config():
 
     config.add_section("URLs")
     config.set("URLs", "linkedin_login", "https://www.linkedin.com/login")
+    config.set(
+        "URLs", "linkedin_login_success", "https://www.linkedin.com/feed"
+    )
 
     return config
 

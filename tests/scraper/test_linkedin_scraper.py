@@ -1,8 +1,9 @@
 from configparser import NoOptionError, NoSectionError
 
 import pytest
+from selenium import webdriver
 
-from exfill.scrapers.linkedin_scraper import LinkedinScraper
+from exfill.scrapers.linkedin_scraper import InvalidCreds, LinkedinScraper
 
 
 def test_scraper_constructur(load_config):
@@ -32,22 +33,22 @@ def test_scraper_constructor_exceptions_sections(load_config):
         LinkedinScraper(config)
 
 
-# def test_browser_init(load_config):
-#     config = load_config
-#     scraper = LinkedinScraper(config)
-#     driver = scraper.browser_init()
-
-#     assert isinstance(driver, webdriver.firefox.webdriver.WebDriver)
-
-#     driver.close()
-
-
-def test_browser_login(load_config):
+def test_browser_init(load_config):
     config = load_config
     scraper = LinkedinScraper(config)
     scraper.driver = scraper.browser_init()
 
-    # creds file doesn't exist
-    # scraper.browser_login()
+    assert isinstance(scraper.driver, webdriver.firefox.webdriver.WebDriver)
 
-    # scraper.driver.close()
+    scraper.driver.close()
+
+
+def test_browser_login_exception(load_config):
+    config = load_config
+    scraper = LinkedinScraper(config)
+    scraper.driver = scraper.browser_init()
+
+    with pytest.raises(InvalidCreds):
+        scraper.browser_login("invalid_user@gmail.com", "some_password")
+
+    scraper.driver.close()

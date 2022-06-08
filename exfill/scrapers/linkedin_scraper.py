@@ -10,9 +10,14 @@ from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 
 from scrapers.scraper_base import Scraper
+
+
+class InvalidCreds(Exception):
+    pass
 
 
 class LinkedinScraper(Scraper):
@@ -27,6 +32,7 @@ class LinkedinScraper(Scraper):
             self.gecko_log = config.get("Paths", "gecko_log")
             self.creds_file = config.get("Paths", "creds")
             self.login_url = config.get("URLs", "linkedin_login")
+            self.login_success = config.get("URLs", "linkedin_login_success")
             self.output_dir = config.get("Scraper", "linkedin_out_dir")
         except (NoSectionError, NoOptionError) as e:
             logging.error(f"Err msg - {e}")
@@ -79,15 +85,19 @@ class LinkedinScraper(Scraper):
 
         logging.info("Signing in")
         try:
-            self.driver.find_element_by_id("username").send_keys(username)
-            self.driver.find_element_by_id("password").send_keys(password)
-            self.driver.find_element_by_xpath(
-                "//button[@aria-label='Sign in']"
+            self.driver.find_element(By.ID, "username").send_keys(username)
+            self.driver.find_element(By.ID, "password").send_keys(password)
+            self.driver.find_element(
+                By.XPATH, "//button[@aria-label='Sign in']"
             ).click()
+
         except NoSuchElementException as e:
             logging.error(f"Err msg - {e}")
             self.driver.close()
             raise e
+
+        if self.login_success not in self.driver.current_url:
+            raise InvalidCreds
 
     def load_search_page(self, postings_scraped_total: int) -> None:
         sleep(2)
