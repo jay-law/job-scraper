@@ -38,6 +38,7 @@ include = '\.pyi?$'
 src_paths = ["exfill"]
 py_version = 38
 profile = "black"
+line_length = 79
 
 [tool.mypy]
 python_version = "3.8"

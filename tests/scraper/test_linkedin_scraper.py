@@ -124,7 +124,7 @@ def test_load_creds_exceptions(tmpdir, load_config):
 
 
 def test_browser_login_exception(load_config):
-    return 1
+
     config = load_config
     scraper = LinkedinScraper(config)
     scraper.driver = scraper.browser_init()

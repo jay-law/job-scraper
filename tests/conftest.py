@@ -25,7 +25,9 @@ def load_config():
     config.set("Parser", "input_dir", "${Directories:html_dir}")
     config.set("Parser", "output_file", "${Directories:csv_dir}/parsed.csv")
     config.set(
-        "Parser", "output_file_err", "${Directories:csv_dir}/parsed_errors.csv"
+        "Parser",
+        "output_file_err",
+        "${Directories:csv_dir}/parsed_errors.csv",
     )
 
     config.add_section("Scraper")

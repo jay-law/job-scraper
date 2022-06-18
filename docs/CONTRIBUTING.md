@@ -108,10 +108,10 @@ If changes are not made on save, there might be a problem with `pyproject.toml`.
 $ poetry add black --dev
 
 # Run manually - Check if files will be changed
-$ black --check src/
+$ black --check exfill/
 
 # Run manually - Make changes
-$ black src/
+$ black exfill/
 ```
 
 ## isort
@@ -154,7 +154,7 @@ Settings - None. Just using default config.
 $ poetry add flake8 --dev
 
 # Run manually
-$ flake8 src/
+$ flake8 exfill/
 ```
 
 ## mypy
@@ -212,8 +212,6 @@ $ poetry publish
 
 ## Testing Published Package
 
-NOTE - This was broken during the implementation of poetry.  It will be fixed soon... Hopefully
-
 ```bash
 # Create new project
 $ poetry new python-test
@@ -228,5 +226,11 @@ $ poetry shell
 # Install from PyPI
 $ poetry add exfill
 
-# Execute as mentioned in the README
+# Ensure creds.json exists
+
+# Execute - Scrape linkedin
+$ python3 -m exfill.extractor linkedin scrape
+
+# Execute - Parse linkedin
+$ python3 -m exfill.extractor linkedin parse
 ```

@@ -9,7 +9,10 @@ from pathlib import PurePath
 from time import sleep
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    WebDriverException,
+)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webelement import WebElement
@@ -73,7 +76,7 @@ class LinkedinScraper(Scraper):
         try:
             s = Service(executable_path=gecko_driver, log_path=gecko_log)
             driver = webdriver.Firefox(service=s)
-        except Exception as e:
+        except WebDriverException as e:
             logging.error(f"Err msg - {e}")
             raise e
 

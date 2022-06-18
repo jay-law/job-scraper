@@ -64,7 +64,7 @@ def main() -> None:
 
     if args.get("action") == "scrape":
         scraper = ScraperFactory.create("linkedin", config)
-        scraper.scrape_postings(48)
+        scraper.scrape_postings(200)
 
     if args.get("action") == "parse":
         parser = ParserFactory.create("linkedin", config)
