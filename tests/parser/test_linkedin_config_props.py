@@ -4,14 +4,15 @@ import pytest
 from bs4 import BeautifulSoup
 
 
-def test_load_posting_input_file(create_parser):
+def test_load_posting_input_file(create_parser, data_dir):
     parser = create_parser
+    input_dir = data_dir / "html"
+    input_dir.mkdir()
 
-    input_dir = Path("/some/dir")
-    input_file_name = Path("some_file.html")
+    input_file_name = Path("jobid_1234567890_20220101_123456.html")
     input_file = parser.load_posting_input_file(input_dir, input_file_name)
 
-    assert input_file == Path("/some/dir/some_file.html")
+    assert input_file == input_dir / input_file_name
     assert isinstance(input_file, Path)
 
     with pytest.raises(TypeError):
@@ -21,14 +22,16 @@ def test_load_posting_input_file(create_parser):
         parser.load_posting_input_file("/some/dir", "some_file.html")
 
 
-def test_load_posting_soup(create_parser):
+def test_load_posting_soup(create_parser, data_dir):
     parser = create_parser
+    html_dir = data_dir / "html"
+    html_dir.mkdir()
 
-    # fix later
-    input_file = (
-        Path.cwd().__str__()
-        + "/data/html/jobid_3080882196_20220608_131434.html"
-    )
+    input_file = html_dir / "jobid_1234567890_20220101_123456.html"
+
+    html_string = "<div>hello</div>"
+    with open(input_file, "x") as f:
+        f.write(html_string)
 
     soup = parser.load_posting_soup(input_file)
     assert isinstance(soup, BeautifulSoup)

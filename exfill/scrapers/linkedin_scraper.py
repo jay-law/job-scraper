@@ -47,7 +47,7 @@ class LinkedinScraper(Scraper):
         self.browser_login(username, password)
 
         for page in range(ceil(postings_to_scrape / 25)):
-            self.load_search_page(self.search_url, page)
+            self.load_search_page(self.search_url, page * 25)
             sleep(2)  # server might reject request without wait
 
             logging.info("Starting to scrape")

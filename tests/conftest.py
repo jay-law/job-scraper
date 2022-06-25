@@ -60,3 +60,11 @@ def logs_dir(tmp_path):
     dir.mkdir()
 
     return dir
+
+
+@pytest.fixture
+def data_dir(tmp_path):
+    dir = tmp_path / "data"
+    dir.mkdir()
+
+    return dir
