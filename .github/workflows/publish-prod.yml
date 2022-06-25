@@ -1,11 +1,14 @@
 name: Publish
 
-on:
-  workflow_run:
-    workflows:
-      - Linters
-    types:
-      - completed
+on: 
+  workflow_dispatch
+
+# on:
+#   workflow_run:
+#     workflows:
+#       - Linters
+#     types:
+#       - completed
 
 permissions:
   contents: write   # required for creating a release
