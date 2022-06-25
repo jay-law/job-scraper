@@ -124,10 +124,12 @@ def test_load_creds_exceptions(tmpdir, load_config):
 
 
 def test_browser_login_exception(load_config):
-
     config = load_config
     scraper = LinkedinScraper(config)
-    scraper.driver = scraper.browser_init()
+
+    scraper.driver = scraper.browser_init(
+        scraper.gecko_driver, scraper.gecko_log
+    )
 
     with pytest.raises(InvalidCreds):
         scraper.browser_login("invalid_user@gmail.com", "some_password")
