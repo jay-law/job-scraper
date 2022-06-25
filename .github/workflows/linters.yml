@@ -1,13 +1,11 @@
 name: Linters
 
-on: 
+on:
   workflow_dispatch
-
-# on:
-#   pull_request:
-#     types: [opened, reopened]
-#     branches:
-#       - main
+  # pull_request:
+  #   types: [opened, reopened]
+  #   branches:
+  #     - main
 
 
 jobs:
