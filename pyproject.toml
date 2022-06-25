@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exfill"
-version = "0.1.27"
+version = "0.1.28"
 description = "A small app to grab job postings from online job boards"
 authors = ["jay-law <jay-law@users.noreply.github.com>"]
 readme = "README.md"
@@ -9,7 +9,7 @@ repository = "https://github.com/jay-law/job-scraper"
 documentation = "https://github.com/jay-law/job-scraper"
 
 [tool.poetry.scripts]
-# cli-script = "exfill.extractor:main"
+script-run = "exfill.extractor:main"
 script-tests = "tests.runtests:main"
 
 [tool.poetry.dependencies]
