@@ -180,8 +180,19 @@ $ mypy
 # Testing
 
 ```bash
-# Run tests
-$ pytest
+# Clone repo
+$ git clone git@github.com:jay-law/job-scraper.git
+$ cd job-scraper/
+
+# Install deps
+$ poetry install
+
+# Run tests (method 1)
+$ poetry run pytest tests/
+
+# Run tests (method 2)
+$ poetry run script-tests
+# script-tests is defined in pyproject.toml
 ```
 
 # Publishing

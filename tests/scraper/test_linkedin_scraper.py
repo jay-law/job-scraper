@@ -84,7 +84,7 @@ def test_load_creds(tmpdir, load_config):
     assert password == "password1"
 
 
-def test_load_creds_exceptions(tmpdir, load_config):
+def test_load_creds_exceptions(tmpdir, load_config, logs_dir):
     config = load_config
     scraper = LinkedinScraper(config)
 
@@ -92,7 +92,8 @@ def test_load_creds_exceptions(tmpdir, load_config):
     o.add_argument("--headless")
 
     s = Service(
-        executable_path=scraper.gecko_driver, log_path=scraper.gecko_log
+        executable_path=scraper.gecko_driver,
+        log_path=logs_dir / "geckodriver.log",
     )
 
     creds_file = tmpdir.join("creds.json")
@@ -123,12 +124,12 @@ def test_load_creds_exceptions(tmpdir, load_config):
             scraper.load_creds(creds_file)
 
 
-def test_browser_login_exception(load_config):
+def test_browser_login_exception(load_config, logs_dir):
     config = load_config
     scraper = LinkedinScraper(config)
 
     scraper.driver = scraper.browser_init(
-        scraper.gecko_driver, scraper.gecko_log
+        scraper.gecko_driver, logs_dir / "geckodriver.log"
     )
 
     with pytest.raises(InvalidCreds):

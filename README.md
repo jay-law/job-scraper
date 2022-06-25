@@ -123,4 +123,4 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Migrate to `poetry` for virtual env, building, and publishing
 * [x] Replace os.path usage with pathlib
 * [x] Replace pandas export with csv export
-* [ ] Replace unittest with pytest
+* [x] Replace unittest with pytest

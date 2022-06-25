@@ -9,7 +9,8 @@ repository = "https://github.com/jay-law/job-scraper"
 documentation = "https://github.com/jay-law/job-scraper"
 
 [tool.poetry.scripts]
-cli-script = "exfill.extractor:main"
+# cli-script = "exfill.extractor:main"
+script-tests = "tests.runtests:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
