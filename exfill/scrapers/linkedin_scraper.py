@@ -14,6 +14,7 @@ from selenium.common.exceptions import (
     WebDriverException,
 )
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -74,8 +75,10 @@ class LinkedinScraper(Scraper):
 
         logging.info("Initalizing browser")
         try:
+            o = Options()
+            o.add_argument("--headless")
             s = Service(executable_path=gecko_driver, log_path=gecko_log)
-            driver = webdriver.Firefox(service=s)
+            driver = webdriver.Firefox(service=s, options=o)
         except WebDriverException as e:
             logging.error(f"Err msg - {e}")
             raise e
