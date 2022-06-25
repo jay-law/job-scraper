@@ -8,7 +8,7 @@ from configparser import ConfigParser, ExtendedInterpolation
 from pathlib import Path, PurePath
 
 from parsers.parser_factory import ParserFactory
-from scrapers.factory import ScraperFactory
+from scrapers.scraper_factory import ScraperFactory
 
 
 class ConfigFileMissing(Exception):
@@ -64,7 +64,7 @@ def main() -> None:
 
     if args.get("action") == "scrape":
         scraper = ScraperFactory.create("linkedin", config)
-        scraper.scrape_postings(48)
+        scraper.scrape_postings(200)
 
     if args.get("action") == "parse":
         parser = ParserFactory.create("linkedin", config)

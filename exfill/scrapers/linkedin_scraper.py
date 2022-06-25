@@ -1,111 +1,146 @@
 import json
 import logging
 import re
+from configparser import NoOptionError, NoSectionError
 from datetime import datetime
+from json import JSONDecodeError
 from math import ceil
 from pathlib import PurePath
 from time import sleep
 
-from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    WebDriverException,
+)
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.remote.webelement import WebElement
 
 from scrapers.scraper_base import Scraper
 
 
+class InvalidCreds(Exception):
+    pass
+
+
 class LinkedinScraper(Scraper):
     def __init__(self, config):
-        self.config = config
+
+        try:
+            self.gecko_driver = PurePath(__file__).parent.parent / config.get(
+                "Paths", "gecko_driver"
+            )
+            self.gecko_log = config.get("Paths", "gecko_log")
+            self.creds_file = config.get("Paths", "creds")
+            self.login_url = config.get("URLs", "linkedin_login")
+            self.login_success = config.get("URLs", "linkedin_login_success")
+            self.search_url = config.get("URLs", "linkedin_search")
+            self.output_dir = config.get("Scraper", "linkedin_out_dir")
+        except (NoSectionError, NoOptionError) as e:
+            logging.error(f"Err msg - {e}")
+            raise e
 
     def scrape_postings(self, postings_to_scrape: int):
-        self.driver = self.browser_init()
-        self.browser_login()
+        self.driver = self.browser_init(self.gecko_driver, self.gecko_log)
+        username, password = self.load_creds(self.creds_file)
+        self.browser_login(username, password)
 
         for page in range(ceil(postings_to_scrape / 25)):
-            self.load_search_page(page)
-            self.scrape_page()
+            self.load_search_page(self.search_url, page * 25)
+            sleep(2)  # server might reject request without wait
+
+            logging.info("Starting to scrape")
+            for i in range(25):  # 25 postings per page
+                # About 7 are loaded initially.  More are loaded
+                # dynamically as the user scrolls down
+                postings: list = self.update_postings()
+                posting: WebElement = postings[i]
+
+                logging.info(f"Scrolling to - {i}")
+                self.click_posting(posting)
+
+                jobid = self.set_jobid(posting.get_attribute("href"))
+
+                sleep(2)  # helps with missing content
+                self.export_html(
+                    self.output_dir, jobid, self.driver.page_source
+                )
 
         logging.info("Closing browser")
         self.driver.close()
 
-    def browser_init(self) -> webdriver:
-        logging.info("Initalizing browser")
+    def browser_init(self, gecko_driver, gecko_log) -> webdriver:
 
-        driver = webdriver.Firefox(
-            executable_path=PurePath(__file__).parent.parent
-            / self.config.get("Paths", "gecko_driver"),
-            service_log_path=self.config.get("Paths", "gecko_log"),
-        )
+        logging.info("Initalizing browser")
+        try:
+            s = Service(executable_path=gecko_driver, log_path=gecko_log)
+            driver = webdriver.Firefox(service=s)
+        except WebDriverException as e:
+            logging.error(f"Err msg - {e}")
+            raise e
 
         driver.implicitly_wait(10)
         driver.set_window_size(1800, 600)
 
         return driver
 
-    def browser_login(self) -> None:
-
-        logging.info("Navigating to login page")
-        self.driver.get(self.config.get("URLs", "linkedin_login"))
+    def load_creds(self, creds_file) -> tuple:
 
         logging.info("Reading in creds")
-        with open(
-            self.config.get("Paths", "creds"), encoding="UTF-8"
-        ) as creds:
-            cred_dict = json.load(creds)["linkedin"]
-        logging.info(f"User name - {cred_dict['username']}")
+        try:
+            with open(creds_file, encoding="UTF-8") as creds:
+                cred_dict = json.load(creds)["linkedin"]
+                username = cred_dict["username"]
+                password = cred_dict["password"]
+        except (FileNotFoundError, KeyError, JSONDecodeError) as e:
+            logging.error(f"Err msg - {e}")
+            self.driver.close()
+            raise e
+
+        return (username, password)
+
+    def browser_login(self, username, password) -> None:
+
+        logging.info("Navigating to login page")
+        self.driver.get(self.login_url)
+
+        logging.info(f"User name - {username}")
 
         logging.info("Signing in")
-        self.driver.find_element_by_id("username").send_keys(
-            cred_dict["username"]
-        )
-        self.driver.find_element_by_id("password").send_keys(
-            cred_dict["password"]
-        )
-        self.driver.find_element_by_xpath(
-            "//button[@aria-label='Sign in']"
-        ).click()
+        try:
+            self.driver.find_element(By.ID, "username").send_keys(username)
+            self.driver.find_element(By.ID, "password").send_keys(password)
+            self.driver.find_element(
+                By.XPATH, "//button[@aria-label='Sign in']"
+            ).click()
 
-    def load_search_page(self, postings_scraped_total: int) -> None:
+        except NoSuchElementException as e:
+            logging.error(f"Err msg - {e}")
+            self.driver.close()
+            raise e
+
+        if self.login_success not in self.driver.current_url:
+            raise InvalidCreds
+
+    def load_search_page(
+        self, search_url, postings_scraped_total: int
+    ) -> None:
+
         sleep(2)
-        url = (
-            "https://www.linkedin.com/jobs/search"
-            + "?keywords=devops&location=United%20States&f_WT=2&&start="
-            + str(postings_scraped_total)
-        )
+        url = search_url + str(postings_scraped_total)
         logging.info(f"Loading url: {url}")
         self.driver.get(url)
 
-    def export_html(self, page_source):
-        soup = BeautifulSoup(page_source, "html.parser")
-        output_file_prefix = (
-            self.config.get("Scraper", "linkedin_out_dir") + "/jobid_"
+    def click_posting(self, posting: WebElement) -> None:
+
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView(true);",
+            posting,
         )
+        posting.click()
 
-        # Find jobid - it's easier with beautifulsoup
-        # Example:
-        # <a ... href="/jobs/view/2963302086/?alternateChannel...">
-        logging.info("Finding Job ID")
-        posting_details = soup.find(class_="job-view-layout")
-        anchor_link = posting_details.find("a")
-        jobid_search = re.search(r"view/(\d*)/", anchor_link["href"])
-        jobid = jobid_search.group(1)
-
-        # File name syntax:
-        # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
-        # Example:
-        # jobid_2886320758_20220322_120555.html
-        output_file = (
-            output_file_prefix
-            + jobid
-            + "_"
-            + datetime.now().strftime("%Y%m%d_%H%M%S")
-            + ".html"
-        )
-
-        logging.info(f"Exporting jobid {jobid} to {output_file}")
-        with open(output_file, "w+", encoding="UTF-8") as file:
-            file.write(posting_details.prettify())
-
-    def update_anchor_list(self):
+    def update_postings(self) -> list:
         # Create a list of each card (list of anchor tags).
         # Example card below:
         # <a href="/jobs/view/..." id="ember310" class="disabled ember-view
@@ -113,22 +148,32 @@ class LinkedinScraper(Scraper):
         logging.info("Updating card anchor list")
         return self.driver.find_elements_by_class_name("job-card-list__title")
 
-    def scrape_page(self) -> None:
-        sleep(2)
-        card_anchor_list = self.update_anchor_list()
+    def set_jobid(self, href: str) -> str:
+        # Example:
+        # <a ... href="/jobs/view/2963302086/?alternateChannel...">
+        try:
+            jobid = re.search(r"view/(\d*)/", href)
+            jobid = jobid.group(1)  # type: ignore
+        except Exception as e:
+            logging.error(f"Err msg - {e}")
+            return "ERROR"
+        else:
+            return jobid  # type: ignore
 
-        for i in range(25):
-            logging.info(f"Scrolling to - {i}")
-            self.driver.execute_script(
-                "arguments[0].scrollIntoView(true);",
-                card_anchor_list[i],
-            )
-            logging.info(f"Clicking on {i}")
-            card_anchor_list[i].click()
-            sleep(2)  # hopefully helps with missing content
+    def export_html(self, output_dir, jobid: str, page_source) -> None:
+        # File name syntax:
+        # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
+        # Example:
+        # jobid_2886320758_20220322_120555.html
+        output_file = (
+            output_dir
+            + "/jobid_"
+            + jobid
+            + "_"
+            + datetime.now().strftime("%Y%m%d_%H%M%S")
+            + ".html"
+        )
 
-            # About 7 are loaded initially.  More are loaded
-            # dynamically as the user scrolls down
-            card_anchor_list = self.update_anchor_list()
-
-            self.export_html(self.driver.page_source)
+        logging.info(f"Exporting jobid {jobid} to {output_file}")
+        with open(output_file, "w+", encoding="UTF-8") as f:
+            f.write(page_source)

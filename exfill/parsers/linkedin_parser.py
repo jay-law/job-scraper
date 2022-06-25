@@ -78,10 +78,9 @@ class LinkedinParser(Parser):
             self.input_dir = Path(
                 Path.cwd() / config.get("Parser", "input_dir")
             )
-        except NoSectionError as e:
-            raise InvalidConfigArg(e.message) from None
-        except NoOptionError as e:
-            raise InvalidConfigArg(e.message) from None
+        except (NoSectionError, NoOptionError) as e:
+            logging.error(f"Err msg - {e}")
+            raise e
 
     # parser
     def parse_export(self) -> None:

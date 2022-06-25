@@ -48,7 +48,9 @@ The second action is parsing.  Each job posting in `data/html` will be opened an
 
 The csv file provides a high-level overview of all the jobs returned during the query.  When imported to a spreadsheet, users can filter on fields not present in the original search options.  Examples include sorting by companies or excluding certain industries.
 
-## Use as Code
+## Add Creds File
+
+This is required for all usage.
 
 ```bash
 # Install with git
@@ -63,13 +65,21 @@ cat <<EOF > creds.json
     }
 }
 EOF
+```
+
+## Use as Code
+
+```bash
+# Install with git
+$ git clone git@github.com:jay-law/job-scraper.git
 
 # Activate virtual env
 $ poetry shell
 
 # Install dependencies
-$ poetry install            # all deps
-$ poetry install --no-dev   # don't install linters/formatters
+$ poetry install
+
+# Ensure creds.json exists (see above)
 
 # Execute - Scrape linkedin
 $ python3 exfill/extractor.py linkedin scrape
@@ -80,11 +90,11 @@ $ python3 exfill/extractor.py linkedin parse
 
 ## Use as Module
 
-NOTE - This was broken during the implementation of poetry.  It will be fixed soon... Hopefully
-
 ```bash
 # Install
-$ python3 -m pip install --upgrade exfill
+$ poetry add exfill
+
+# Ensure creds.json exists (see above)
 
 # Execute - Scrape linkedin
 $ python3 -m exfill.extractor linkedin scrape
@@ -113,4 +123,4 @@ $ python3 -m exfill.extractor linkedin parse
 * [x] Migrate to `poetry` for virtual env, building, and publishing
 * [x] Replace os.path usage with pathlib
 * [x] Replace pandas export with csv export
-* [ ] Replace unittest with pytest
+* [x] Replace unittest with pytest
