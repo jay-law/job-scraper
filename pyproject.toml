@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exfill"
-version = "0.1.26"
+version = "0.1.27"
 description = "A small app to grab job postings from online job boards"
 authors = ["jay-law <jay-law@users.noreply.github.com>"]
 readme = "README.md"
