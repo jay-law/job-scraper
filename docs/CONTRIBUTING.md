@@ -173,7 +173,8 @@ $ flake8 exfill/
 # Install
 $ poetry add mypy --dev
 
-# Run manually
+# Run manually.  This will produce different results from running in
+# the pre-commit hook
 $ mypy
 ```
 
