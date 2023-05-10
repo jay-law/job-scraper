@@ -2,6 +2,7 @@
 each posting, then combine all of the information into a single useable
 csv file.
 """
+import click
 import logging
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
@@ -25,10 +26,9 @@ def init_parser() -> dict:
     return vars(parser.parse_args())
 
 
-def load_config() -> ConfigParser:
+def load_config(config_file: PurePath) -> ConfigParser:
     """Load config file"""
 
-    config_file = PurePath(__file__).parent / "config.ini"
     if not Path(config_file).exists():
         raise ConfigFileMissing("Default config.ini is missing")
 
@@ -44,35 +44,36 @@ def create_dirs(config: ConfigParser) -> None:
         Path.mkdir(Path.cwd() / dir_path[1], exist_ok=True)
 
 
-def main() -> None:
-    """Main controller function used to call child functions/modules."""
-    # Load config
-    config = load_config()
+@click.group
+@click.option("-c", "--config", "config_file", type=str, required=True)
+@click.pass_context
+def main(ctx, config_file) -> None:
+    ctx.ensure_object(dict)
+    ctx.obj["config"] = load_config(config_file)
 
-    create_dirs(config)
-
-    # Initialize logging
     logging.basicConfig(
-        filename=config.get("Paths", "app_log"),
+        filename="extractor.log",
         level=logging.INFO,  # level=logging.INFO should be default
         format="[%(asctime)s] [%(levelname)s] - %(message)s",
         filemode="w+",
     )
 
-    args = init_parser()
-    logging.info(f"Starting app with the following input args: {args}")
 
-    if args.get("action") == "scrape":
-        scraper = ScraperFactory.create("linkedin", config)
-        scraper.scrape_postings(200)
+@main.command()
+@click.pass_context
+def scrape(ctx):
+    print("scraping")
+    scraper = ScraperFactory.create("linkedin", config=ctx.obj["config"])
+    scraper.scrape_postings(200)
 
-    if args.get("action") == "parse":
-        parser = ParserFactory.create("linkedin", config)
-        parser.parse_postings()
 
-    logging.info("Finished execution.  Exiting application.")
+@main.command()
+@click.pass_context
+def parse(ctx):
+    print("parsing")
+    parser = ParserFactory.create("linkedin", config=ctx.obj["config"])
+    parser.parse_postings()
 
 
 if __name__ == "__main__":
-
     main()
