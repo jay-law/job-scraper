@@ -11,6 +11,8 @@ from pathlib import Path, PurePath
 from parsers.parser_factory import ParserFactory
 from scrapers.scraper_factory import ScraperFactory
 
+logger = logging.getLogger(__name__)
+
 
 class ConfigFileMissing(Exception):
     pass
@@ -46,32 +48,36 @@ def create_dirs(config: ConfigParser) -> None:
 
 @click.group
 @click.option("-c", "--config", "config_file", type=str, required=True)
+@click.option("-s", "--site", "site", type=str, required=True)
 @click.pass_context
-def main(ctx, config_file) -> None:
+def main(ctx, config_file, site) -> None:
     ctx.ensure_object(dict)
     ctx.obj["config"] = load_config(config_file)
+    ctx.obj["site"] = site
 
     logging.basicConfig(
-        filename="extractor.log",
-        level=logging.INFO,  # level=logging.INFO should be default
+        # filename="extractor.log",
+        level=logging.INFO,
         format="[%(asctime)s] [%(levelname)s] - %(message)s",
-        filemode="w+",
+        # filemode="w+",
     )
 
 
 @main.command()
 @click.pass_context
 def scrape(ctx):
-    print("scraping")
-    scraper = ScraperFactory.create("linkedin", config=ctx.obj["config"])
+    site = ctx.obj["site"]
+    logger.info(f"Scraping {site}")
+    scraper = ScraperFactory.create(site, config=ctx.obj["config"])
     scraper.scrape_postings(200)
 
 
 @main.command()
 @click.pass_context
 def parse(ctx):
-    print("parsing")
-    parser = ParserFactory.create("linkedin", config=ctx.obj["config"])
+    site = ctx.obj["site"]
+    logger.info(f"Parsing {site}")
+    parser = ParserFactory.create(site, config=ctx.obj["config"])
     parser.parse_postings()
 
 

@@ -76,12 +76,8 @@ $ poetry install
 # Ensure creds.json exists (see above)
 
 # Execute - Scrape linkedin
-python3 exfill/extractor.py linkedin scrape
+poetry run script-run -c config.ini -s linkedin scrape
 
 # Execute - Parse linkedin
-$ python3 exfill/extractor.py linkedin parse
-
-
-
-poetry run script-run -c config.ini scrape
+poetry run script-run -c config.ini parse
 ```
