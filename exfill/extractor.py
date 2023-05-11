@@ -2,11 +2,12 @@
 each posting, then combine all of the information into a single useable
 csv file.
 """
-import click
 import logging
 from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 from pathlib import Path, PurePath
+
+import click
 
 from parsers.parser_factory import ParserFactory
 from scrapers.scraper_factory import ScraperFactory

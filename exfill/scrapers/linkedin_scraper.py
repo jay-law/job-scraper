@@ -1,12 +1,11 @@
 import json
 import logging
 import re
-import sys
 from configparser import NoOptionError, NoSectionError
 from datetime import datetime
 from json import JSONDecodeError
 from math import ceil
-from pathlib import PurePath, Path
+from pathlib import Path, PurePath
 from time import sleep
 
 from selenium import webdriver
@@ -18,7 +17,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.remote.webdriver import WebDriver
+
 from scrapers.scraper_base import Scraper
 
 
