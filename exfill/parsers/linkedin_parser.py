@@ -9,7 +9,7 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
-from parsers.parser_base import Parser
+from exfill.parsers.parser_base import Parser
 
 
 class NoImportFiles(Exception):

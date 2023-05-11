@@ -18,7 +18,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webelement import WebElement
 
-from scrapers.scraper_base import Scraper
+from exfill.scrapers.scraper_base import Scraper
 
 
 class InvalidCreds(Exception):
@@ -80,7 +80,7 @@ class LinkedinScraper(Scraper):
 
     def _browser_init(
         self, gecko_driver, binary_location, gecko_log
-    ) -> webdriver:
+    ) -> webdriver.Firefox:
         """Initalizes browser instance."""
         logging.info("Initalizing browser")
 
@@ -90,6 +90,7 @@ class LinkedinScraper(Scraper):
         s = Service(executable_path=gecko_driver, log_path=gecko_log)
         try:
             driver = webdriver.Firefox(service=s, options=o)
+            print(f"---------type: {type(driver)}")
         except WebDriverException as e:
             logging.error(f"Err msg - {e}")
             raise e

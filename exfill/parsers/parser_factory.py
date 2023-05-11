@@ -1,4 +1,4 @@
-from parsers.linkedin_parser import LinkedinParser
+from exfill.parsers.linkedin_parser import LinkedinParser
 
 
 class NoMatchingParserType(Exception):

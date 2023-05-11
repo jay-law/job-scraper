@@ -9,8 +9,8 @@ from pathlib import Path, PurePath
 
 import click
 
-from parsers.parser_factory import ParserFactory
-from scrapers.scraper_factory import ScraperFactory
+from exfill.parsers.parser_factory import ParserFactory
+from exfill.scrapers.scraper_factory import ScraperFactory
 
 logger = logging.getLogger(__name__)
 

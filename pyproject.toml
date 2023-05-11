@@ -13,7 +13,7 @@ script-run = "exfill.extractor:main"
 script-tests = "tests.runtests:main"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 bs4 = "^0.0.1"
 selenium = "^4.1.5"
 setuptools-scm = "^6.4.2"
@@ -32,19 +32,21 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-target-version = ['py38']
+target-version = ['py310']
 line-length = 79
 include = '\.pyi?$'
 
 [tool.isort]
 src_paths = ["exfill"]
-py_version = 38
+py_version = 310
 profile = "black"
 line_length = 79
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.10"
 files = ['exfill/']
+ignore_missing_imports = true
+
 
 [tool.pytest.ini_options]
 testpaths = [
