@@ -13,7 +13,6 @@ from selenium import webdriver
 from selenium.common.exceptions import (
     NoSuchElementException,
     WebDriverException,
-    SessionNotCreatedException,
 )
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -47,32 +46,33 @@ class LinkedinScraper(Scraper):
             raise e
 
     def scrape_postings(self, postings_to_scrape: int):
+        """Scrapes job postings."""
         self.driver = self._browser_init(
             self.gecko_driver, self.binary_location, self.gecko_log
         )
-        username, password = self.load_creds(self.creds_file)
-        self.browser_login(username, password)
+        username, password = self._load_creds(self.creds_file)
+        self._browser_login(username, password)
 
         for page in range(ceil(postings_to_scrape / 25)):
-            self.load_search_page(self.search_url, page * 25)
+            self._load_search_page(self.search_url, page * 25)
             sleep(2)  # server might reject request without wait
 
             logging.info("Starting to scrape")
             for i in range(25):  # 25 postings per page
                 # About 7 are loaded initially.  More are loaded
                 # dynamically as the user scrolls down
-                postings: list = self.update_postings()
+                postings: list = self._update_postings()
 
                 posting: WebElement = postings[i]
                 # posting = postings[i]
 
                 logging.info(f"Scrolling to: {i}")
-                self.click_posting(posting)
+                self._click_posting(posting)
 
-                jobid = self.set_jobid(posting.get_attribute("href"))
+                jobid = self._set_jobid(posting.get_attribute("href"))
 
                 sleep(2)  # helps with missing content
-                self.export_html(
+                self._export_html(
                     self.output_dir, jobid, self.driver.page_source
                 )
 
@@ -82,6 +82,7 @@ class LinkedinScraper(Scraper):
     def _browser_init(
         self, gecko_driver, binary_location, gecko_log
     ) -> webdriver:
+        """Initalizes browser instance."""
         logging.info("Initalizing browser")
 
         o = Options()
@@ -96,7 +97,8 @@ class LinkedinScraper(Scraper):
 
         return driver
 
-    def load_creds(self, creds_file) -> tuple:
+    def _load_creds(self, creds_file) -> tuple:
+        """Loads credentials from creds.json file."""
         logging.info("Reading in creds")
         try:
             with open(creds_file, encoding="UTF-8") as creds:
@@ -110,7 +112,8 @@ class LinkedinScraper(Scraper):
 
         return (username, password)
 
-    def browser_login(self, username, password) -> None:
+    def _browser_login(self, username, password) -> None:
+        """Navigates WebDriver to login page and logs in user."""
         logging.info("Navigating to login page")
         self.driver.get(self.login_url)
 
@@ -132,32 +135,40 @@ class LinkedinScraper(Scraper):
         if self.login_success not in self.driver.current_url:
             raise InvalidCreds
 
-    def load_search_page(
+    def _load_search_page(
         self, search_url, postings_scraped_total: int
     ) -> None:
+        """Loads a search page starting at a specific job posting."""
         sleep(2)
         url = search_url + str(postings_scraped_total)
         logging.info(f"Loading url: {url}")
         self.driver.get(url)
 
-    def click_posting(self, posting: WebElement) -> None:
+    def _click_posting(self, posting: WebElement) -> None:
+        """Clicks on a specific posting using JavaScript."""
         self.driver.execute_script(
             "arguments[0].scrollIntoView(true);",
             posting,
         )
         posting.click()
 
-    def update_postings(self) -> list:
-        # Create a list of each card (list of anchor tags).
-        # Example card below:
-        # <a href="/jobs/view/..." id="ember310" class="disabled ember-view
-        # job-card-container__link job-card-list__title"> blah </a>
+    def _update_postings(self) -> list:
+        """Returns a list of DOM elements where class = job-card-list__title
+
+        Create a list of each card (list of anchor tags).
+        Example card below:
+        <a href="/jobs/view/..." id="ember310" class="disabled ember-view
+        job-card-container__link job-card-list__title"> blah </a>
+        """
         logging.info("Updating card anchor list")
         return self.driver.find_elements(By.CLASS_NAME, "job-card-list__title")
 
-    def set_jobid(self, href: str) -> str:
-        # Example:
-        # <a ... href="/jobs/view/2963302086/?alternateChannel...">
+    def _set_jobid(self, href: str) -> str:
+        """Sets the jobid for a page
+
+        Example:
+        <a ... href="/jobs/view/2963302086/?alternateChannel...">
+        """
         try:
             jobid = re.search(r"view/(\d*)/", href)
             jobid = jobid.group(1)  # type: ignore
@@ -167,11 +178,14 @@ class LinkedinScraper(Scraper):
         else:
             return jobid  # type: ignore
 
-    def export_html(self, output_dir, jobid: str, page_source) -> None:
-        # File name syntax:
-        # jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
-        # Example:
-        # jobid_2886320758_20220322_120555.html
+    def _export_html(self, output_dir, jobid: str, page_source) -> None:
+        """Exports scraped html to local file.
+
+        File name syntax:
+        jobid_[JOBID]_[YYYYMMDD]_[HHMMSS].html
+        Example:
+        jobid_2886320758_20220322_120555.html
+        """
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         file_name = str(
             "jobid_"
