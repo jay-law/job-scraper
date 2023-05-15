@@ -53,28 +53,22 @@ The csv file provides a high-level overview of all the jobs returned during the 
 This is required for all usage.
 
 ```bash
-# Install with git
-$ git clone git@github.com:jay-law/job-scraper.git
-
 # Create and populate creds.json.  Bash only:
 cat <<EOF > creds.json
 {
     "linkedin": {
-        "username": "jay-law@protonmail.com",
+        "username": "jay-law@users.noreply.github.com",
         "password": "password1"
     }
 }
 EOF
 ```
 
-## Use as Code
+## Execute
 
 ```bash
 # Install with git
-$ git clone git@github.com:jay-law/job-scraper.git
-
-# Activate virtual env
-$ poetry shell
+git clone git@github.com:jay-law/job-scraper.git
 
 # Install dependencies
 $ poetry install
@@ -82,45 +76,8 @@ $ poetry install
 # Ensure creds.json exists (see above)
 
 # Execute - Scrape linkedin
-$ python3 exfill/extractor.py linkedin scrape
+poetry run script-run -c config.ini -s linkedin scrape
 
 # Execute - Parse linkedin
-$ python3 exfill/extractor.py linkedin parse
+poetry run script-run -c config.ini parse
 ```
-
-## Use as Module
-
-```bash
-# Install
-$ poetry add exfill
-
-# Ensure creds.json exists (see above)
-
-# Execute - Scrape linkedin
-$ python3 -m exfill.extractor linkedin scrape
-
-# Execute - Parse linkedin
-$ python3 -m exfill.extractor linkedin parse
-```
-
-# Roadmap
-
-* [x] Write unit tests
-* [ ] Improve secret handling
-* [x] Add packaging
-* [x] Move paths to config file
-* [x] Move keyword logic
-* [x] Set/include default config.ini for users installing with PIP
-* [x] Add CICD
-* [x] Automate versioning
-* [x] Add formatter (black module)
-* [x] Add static type checking (mypy module)
-* [x] Add import sorter (isort module)
-* [x] Add linter (flake8 module)
-* [x] Update string interpolation from %f to f-string
-* [x] Replace sys.exit calls with exceptions
-* [x] Update how the config object is accessed
-* [x] Migrate to `poetry` for virtual env, building, and publishing
-* [x] Replace os.path usage with pathlib
-* [x] Replace pandas export with csv export
-* [x] Replace unittest with pytest

@@ -1,9 +1,12 @@
 import pytest
 
-from parsers.linkedin_parser import LinkedinParser
-from parsers.parser_factory import NoMatchingParserType, ParserFactory
-from scrapers.linkedin_scraper import LinkedinScraper
-from scrapers.scraper_factory import NoMatchingScraperType, ScraperFactory
+from exfill.parsers.linkedin_parser import LinkedinParser
+from exfill.parsers.parser_factory import NoMatchingParserType, ParserFactory
+from exfill.scrapers.linkedin_scraper import LinkedinScraper
+from exfill.scrapers.scraper_factory import (
+    NoMatchingScraperType,
+    ScraperFactory,
+)
 
 
 def test_parser_factory(load_config):

@@ -33,7 +33,7 @@ $ poetry install
 $ poetry version patch
 
 # Check linting and formatting before commit
-$ pre-commit run --all-files
+$ poetry run pre-commit run --all-files
 
 # Add, commit, and push in git
 $ git add *

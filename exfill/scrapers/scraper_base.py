@@ -6,9 +6,5 @@ class Scraper:
         self.config = config
 
     @abstractmethod
-    def scrape_postings(self):
+    def scrape_postings(self, postings_to_scrape: int):
         "Scrape job postings"
-
-    @abstractmethod
-    def export(self):
-        "Export postings to file"

@@ -1,4 +1,4 @@
-from scrapers.linkedin_scraper import LinkedinScraper
+from exfill.scrapers.linkedin_scraper import LinkedinScraper
 
 
 class NoMatchingScraperType(Exception):
