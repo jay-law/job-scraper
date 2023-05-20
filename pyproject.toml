@@ -8,10 +8,6 @@ homepage = "https://github.com/jay-law/job-scraper"
 repository = "https://github.com/jay-law/job-scraper"
 documentation = "https://github.com/jay-law/job-scraper"
 
-[tool.poetry.scripts]
-script-run = "exfill.extractor:main"
-script-tests = "tests.runtests:main"
-
 [tool.poetry.dependencies]
 python = "^3.10"
 bs4 = "^0.0.1"
@@ -52,3 +48,7 @@ ignore_missing_imports = true
 testpaths = [
   "tests"
 ]
+
+[tool.poetry.scripts]
+script-run = "exfill.extractor:main"
+script-tests = "tests.runtests:main"
